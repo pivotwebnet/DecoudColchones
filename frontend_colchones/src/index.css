@@ -1,0 +1,72 @@
+/* src/index.css */
+
+/* --- Variables Globales de Color --- */
+:root {
+  --color-primary: #1e3a8a; /* Azul oscuro (para texto, botones principales) */
+  --color-secondary: #0c4a6e; /* Azul más profundo para fondos/degrade */
+  --color-accent: #3b82f6; /* Azul claro (para hover, enlaces, acentos) */
+  --color-success: #10b981; /* Verde (para stock, éxito) */
+  --color-warning: #f59e0b; /* Amarillo/Naranja (para ofertas) */
+  --color-background-light: #f8fafc; /* Fondo general de componentes */
+  --color-text-dark: #1f2937;
+  --color-text-light: #e5e7eb;
+}
+
+/* --- Fondo Global con Degrade Azul Oscuro --- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  color: var(--color-text-dark);
+  /* Degradado principal de azul oscuro a azul más oscuro */
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  min-height: 100vh;
+  background-attachment: fixed; /* Mantiene el degrade fijo al hacer scroll */
+}
+
+/* Contenedor principal para centrar el contenido y mantener el degradado */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Estilo para contenedores de contenido principal */
+.content-area {
+  flex-grow: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco semitransparente sobre el degrade */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Estilos de Botones Primarios */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #1e40af; /* Tono más oscuro de acento */
+}
+
+/* Estilos de Botones de Logout/Peligro */
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}

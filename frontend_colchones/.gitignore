@@ -1,0 +1,6 @@
+# Archivos de Build
+dist/
+.vite/
+
+# Archivos de Dependencias
+node_modules/

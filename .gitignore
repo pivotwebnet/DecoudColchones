@@ -1,0 +1,14 @@
+# Ignorar Entorno Virtual (Python)
+.venv/
+__pycache__/
+*.pyc
+
+# Ignorar Dependencias de Node.js (Frontend)
+frontend_colchones/node_modules/
+
+# Ignorar Archivos de BD (SQLite, si no usas PostgreSQL)
+db.sqlite3
+
+# Ignorar archivos locales y de logs
+*.log
+.DS_Store
