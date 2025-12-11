@@ -105,7 +105,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'ELMASLINDO999',
+        'PASSWORD': 'ELMASLINDO999SA.',      #USANDO POSTGRESQL LOCAL DE ACERMA, CAMBIAR CONTRASEÑA SI ES ESTOY EN CASA. (SIN EL SA.)
         'HOST': 'localhost',
         'PORT': '5432',
     }

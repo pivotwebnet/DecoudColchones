@@ -1,12 +1,13 @@
 # productos/urls.py
 
 from rest_framework.routers import DefaultRouter
-from .views import ProductoViewSet, CategoriaViewSet, PedidoCreateView
+from .views import ProductoViewSet, CategoriaViewSet, PedidoCreateView, PedidoViewSet
 from django.urls import path # Necesario para rutas que no usan el Router
 
 router = DefaultRouter()
 router.register(r'colchones', ProductoViewSet) # <-- Esto crea /colchones/
 router.register(r'categorias', CategoriaViewSet) 
+router.register(r'pedidos', PedidoViewSet)
 
 urlpatterns = [
     # Ruta para crear pedidos (vista manual)

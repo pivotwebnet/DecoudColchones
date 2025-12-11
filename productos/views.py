@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 # Importar solo los modelos que existen actualmente
@@ -61,3 +62,25 @@ class PedidoCreateView(APIView):
 
         # Devolver errores de validación del formulario de checkout (ej: email no válido)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all()
+    # Usamos el serializer normal para listar, pero el de creación para escribir
+    serializer_class = PedidoCreateSerializer 
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        """
+        Recibe el JSON del frontend, valida y crea el pedido.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            pedido = serializer.save()
+            return Response({
+                "id": pedido.id,
+                "status": "created",
+                "message": "Pedido guardado correctamente"
+            }, status=status.HTTP_201_CREATED)
+        else:
+            print("Errores de validación:", serializer.errors) # Para ver en la consola negra
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
