@@ -1,73 +1,48 @@
 // src/App.jsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// Páginas del E-commerce
+// Páginas
 import HomePage from './pages/HomePage';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage'; // Asegúrate de crear este componente
-
-// Páginas de Autenticación y Usuario
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ProfilePage from './pages/ProfilePage'; // Asegúrate de crear este componente/placeholder
+import CheckoutPage from './pages/CheckoutPage';
+import ProfilePage from './pages/ProfilePage';
 
-// Componente Wrapper: Aplica el estilo de fondo blanco y centrado
-const ContentWrapper = ({ element: Component, ...rest }) => (
-    // Aplicamos la clase CSS global ".content-area" para el fondo blanco con sombra.
-    // Esto se centra sobre el degradado azul oscuro definido en index.css (body).
+// Wrapper para centrar el contenido en páginas que NO son la Home
+const ContentWrapper = ({ element: Component }) => (
     <div className="content-area">
-        <Component {...rest} />
+        <Component />
     </div>
 );
 
-
 const App = () => {
-    
-    // Lista de componentes a importar para el ContentWrapper
-    const pages = {
-        ProductList,
-        ProductDetail,
-        CartPage,
-        CheckoutPage,
-        LoginPage,
-        RegisterPage,
-        ProfilePage
-    };
-
     return (
         <>
             <Header />
-            
-            {/* El elemento <main> envuelve la aplicación, permitiendo que el fondo degradado del <body> se vea */}
-            <main style={{ flexGrow: 1, display: 'flex' }}> 
+            {/* ELIMINAMOS cualquier style={{ padding }} o flex que restringiera el ancho */}
+            <main style={{ minHeight: 'calc(100vh - 160px)', width: '100%' }}>
                 <Routes>
-                    
-                    {/* 1. Ruta Especial: HomePage (Permanece fuera del ContentWrapper para usar el degrade en el fondo principal) */}
+                    {/* La Home va "cruda" (sin wrapper) para controlar su propio ancho */}
                     <Route path="/" element={<HomePage />} />
-                    
-                    {/* 2. Rutas Principales del E-commerce (Usan ContentWrapper) */}
-                    <Route path="/colchones" element={<ContentWrapper element={pages.ProductList} />} />
-                    <Route path="/colchones/:slug" element={<ContentWrapper element={pages.ProductDetail} />} />
-                    <Route path="/carrito" element={<ContentWrapper element={pages.CartPage} />} />
-                    <Route path="/checkout" element={<ContentWrapper element={pages.CheckoutPage} />} />
 
-                    {/* 3. Rutas de Autenticación y Perfil (Usan ContentWrapper) */}
-                    <Route path="/login" element={<ContentWrapper element={pages.LoginPage} />} />
-                    <Route path="/register" element={<ContentWrapper element={pages.RegisterPage} />} />
-                    <Route path="/profile" element={<ContentWrapper element={pages.ProfilePage} />} />
+                    {/* Las demás páginas sí van encajonadas en el cuadro blanco centrado */}
+                    <Route path="/colchones" element={<ContentWrapper element={ProductList} />} />
+                    <Route path="/colchones/:slug" element={<ContentWrapper element={ProductDetail} />} />
+                    <Route path="/carrito" element={<ContentWrapper element={CartPage} />} />
+                    <Route path="/checkout" element={<ContentWrapper element={CheckoutPage} />} />
+                    <Route path="/login" element={<ContentWrapper element={LoginPage} />} />
+                    <Route path="/register" element={<ContentWrapper element={RegisterPage} />} />
+                    <Route path="/profile" element={<ContentWrapper element={ProfilePage} />} />
                     
-                    {/* 4. Ruta 404 (Not Found) */}
-                    <Route path="*" element={<ContentWrapper element={() => (<h1 className="text-4xl text-red-600">404 | Página no encontrada</h1>)} />} />
-
+                    <Route path="*" element={<h1 className="text-white text-center mt-10">404 - Página no encontrada</h1>} />
                 </Routes>
             </main>
-            
             <Footer />
         </>
     );

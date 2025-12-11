@@ -23,7 +23,7 @@ export default api;
 // ¡CRÍTICO! Usar 'export' aquí
 export const getProductos = async () => {   
   try {
-    const response = await api.get('colchones/'); 
+    const response = await api.get('/colchones/'); 
     return response.data;
   } catch (error) {
     console.error("Error al obtener productos:", error);
@@ -34,7 +34,7 @@ export const getProductos = async () => {
 // ¡CRÍTICO! Usar 'export' aquí
 export const getProductoBySlug = async (slug) => { 
   try {
-    const response = await api.get(`colchones/${slug}/`);
+    const response = await api.get(`/colchones/${slug}/`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener producto con slug ${slug}:`, error);
@@ -42,10 +42,19 @@ export const getProductoBySlug = async (slug) => {
   }
 };
 
-// ¡CRÍTICO! Usar 'export' aquí (si ya la definiste)
-export const createPedido = async (checkoutData) => { 
-  // ...
+// Función para crear el pedido en el backend
+export const createPedido = async (pedidoData) => {
+    try {
+        // AHORA SÍ: Hacemos la petición POST real a Django
+        // Django espera recibir los datos en la URL /api/pedidos/
+        const response = await api.post('/pedidos/', pedidoData);
+        
+        console.log("Pedido guardado en BD:", response.data);
+        return response.data;
+
+    } catch (error) {
+        console.error("Error creating order:", error.response?.data || error.message);
+        throw error; // Lanzamos el error para que el CheckoutPage lo detecte
+    }
 };
 
-// Si usaste 'export default' en algún lugar, revisa su impacto.
-// Para múltiples funciones, lo mejor es usar 'export const' o 'export function'.

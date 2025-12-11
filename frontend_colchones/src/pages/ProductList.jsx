@@ -1,81 +1,101 @@
-// src/pages/ProductList.jsx (VERSION MEJORADA con espacio para Filtros)
+// src/pages/ProductList.jsx
 
 import React, { useState, useEffect } from 'react';
-import { getProductos } from '../api/api';
+import { getProductos } from '../api/api'; // <--- IMPORTANTE: Usamos getProductos (PLURAL)
 import ColchonCard from '../components/ColchonCard';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // (Aquí se integrarían los parámetros de filtro en el futuro)
+                // Aquí llamamos a la API para traer TODOS los productos
                 const data = await getProductos(); 
                 setProducts(data);
                 setLoading(false);
             } catch (err) {
-                setError('No se pudo cargar el listado de colchones. Asegúrate de que el backend esté funcionando en :8000.');
+                console.error("Error cargando el catálogo:", err);
                 setLoading(false);
             }
         };
-
         fetchProducts();
     }, []);
 
-    if (loading) return <div style={listStyles.loading}>Cargando Catálogo de Descanso...</div>;
-    if (error) return <div style={listStyles.error}>Error: {error}</div>;
-
     return (
-        <div style={listStyles.container}>
-            <h1 style={listStyles.header}>Nuestros Colchones y Líneas</h1>
+        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', paddingBottom: '50px' }}>
             
-            <div style={listStyles.mainContent}>
+            <div style={styles.pageHeader}>
+                <div className="container-centered">
+                    <h1 style={styles.headerTitle}>Catálogo de Colchones</h1>
+                    <p style={styles.headerSubtitle}>Encuentra el soporte ideal para tu descanso</p>
+                </div>
+            </div>
+
+            <div className="container-centered" style={styles.mainLayout}>
                 
-                {/* Columna Lateral para Filtros (Próximo paso) */}
-                <aside style={listStyles.sidebar}>
-                    <h3 style={listStyles.sidebarHeader}>🔍 Filtros (Próximamente)</h3>
-                    <p>Aquí se añadirán filtros por Densidad, Soporte y Composición.</p>
+                {/* Sidebar Filtros */}
+                <aside style={styles.sidebar}>
+                    <div style={styles.filterGroup}>
+                        <h4 style={styles.filterTitle}>Categorías</h4>
+                        <ul style={styles.filterList}>
+                            <li><label><input type="checkbox" /> Espuma</label></li>
+                            <li><label><input type="checkbox" /> Resortes</label></li>
+                        </ul>
+                    </div>
                 </aside>
-                
-                {/* Columna Principal de Productos */}
-                <section style={listStyles.productGrid}>
-                    {products.length > 0 ? (
-                        products.map(product => (
-                            <ColchonCard key={product.id} product={product} /> 
-                        ))
+
+                {/* Grilla de Productos */}
+                <main style={{ flex: 1 }}>
+                    {loading ? (
+                        <p style={{textAlign: 'center', padding: '40px'}}>Cargando productos...</p>
                     ) : (
-                        <p>No hay líneas de colchones disponibles para mostrar.</p>
+                        <div style={styles.productGrid}>
+                            {products.length > 0 ? (
+                                products.map(product => (
+                                    <ColchonCard key={product.id} product={product} />
+                                ))
+                            ) : (
+                                <div style={{textAlign: 'center', width: '100%'}}>
+                                    <h3>No se encontraron productos.</h3>
+                                    <p>Verifica que el backend esté corriendo.</p>
+                                </div>
+                            )}
+                        </div>
                     )}
-                </section>
+                </main>
+
             </div>
         </div>
     );
 };
 
-const listStyles = {
-    container: { maxWidth: '1400px', margin: '0 auto', padding: '20px' },
-    header: { fontSize: '2.5em', borderBottom: '2px solid #eee', paddingBottom: '10px', marginBottom: '20px', color: '#333' },
-    mainContent: { display: 'flex', gap: '30px' },
+const styles = {
+    pageHeader: {
+        backgroundColor: 'white',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '40px 0',
+        marginBottom: '30px',
+    },
+    headerTitle: { fontSize: '2rem', color: 'var(--color-primary)', margin: 0 },
+    headerSubtitle: { color: '#6b7280', marginTop: '10px' },
+    mainLayout: { display: 'flex', gap: '40px', alignItems: 'flex-start' },
     sidebar: {
-        width: '250px',
-        padding: '15px',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        backgroundColor: '#f9f9f9',
-        height: 'fit-content', // Para que no ocupe todo el alto
+        width: '250px', flexShrink: 0, backgroundColor: 'white', padding: '20px',
+        borderRadius: '8px', border: '1px solid #e5e7eb', display: 'none'
     },
-    sidebarHeader: { fontSize: '1.2em', marginBottom: '15px', color: '#555' },
+    filterGroup: { marginBottom: '25px' },
+    filterTitle: { fontSize: '1rem', fontWeight: 'bold', marginBottom: '15px', color: '#333' },
+    filterList: { listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '10px', color: '#555' },
     productGrid: {
-        flexGrow: 1,
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '10px', // Espacio entre las tarjetas
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gap: '25px',
+        width: '100%'
     },
-    loading: { textAlign: 'center', fontSize: '1.5em', padding: '50px' },
-    error: { textAlign: 'center', color: 'red', fontSize: '1.2em', padding: '50px' },
 };
+
+styles.sidebar.display = 'block'; // Hack visual desktop
 
 export default ProductList;

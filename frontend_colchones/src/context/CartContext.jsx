@@ -1,64 +1,79 @@
 // src/context/CartContext.jsx
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// 1. Crear el Contexto
 const CartContext = createContext();
 
-// Hook personalizado para usar el contexto fácilmente
-export const useCart = () => {
-    return useContext(CartContext);
-};
+export const useCart = () => useContext(CartContext);
 
-// 2. Crear el Proveedor (Provider) del Contexto
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([]);
+    // 1. Iniciar estado leyendo de LocalStorage (si existe)
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const storedCart = localStorage.getItem('decoud_cart');
+            return storedCart ? JSON.parse(storedCart) : [];
+        } catch (error) {
+            console.error("Error al leer carrito:", error);
+            return [];
+        }
+    });
 
-    // Función para agregar un producto (con su variante) al carrito
-    const addItem = (product, variant, quantity) => {
-        const itemIdentifier = `${product.id}-${variant.id}`;
-        
+    // 2. Guardar en LocalStorage cada vez que el carrito cambie
+    useEffect(() => {
+        localStorage.setItem('decoud_cart', JSON.stringify(cartItems));
+    }, [cartItems]);
+
+    // Calcular Total
+    const total = cartItems.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+
+    // Función: Agregar Item
+    const addToCart = (product, variant, quantity) => {
         setCartItems(prevItems => {
-            // Verificar si la variante ya existe en el carrito
-            const existingItem = prevItems.find(item => item.id === itemIdentifier);
+            // Creamos un ID único combinando producto + variante para diferenciarlos
+            const uniqueId = `${product.id}-${variant.id}`;
+            
+            const existingItem = prevItems.find(item => item.uniqueId === uniqueId);
 
             if (existingItem) {
-                // Si existe, actualiza la cantidad
-                return prevItems.map(item =>
-                    item.id === itemIdentifier
-                        ? { ...item, quantity: item.quantity + quantity }
+                // Si ya existe, sumamos cantidad
+                return prevItems.map(item => 
+                    item.uniqueId === uniqueId 
+                        ? { ...item, cantidad: item.cantidad + quantity }
                         : item
                 );
             } else {
-                // Si no existe, añade el nuevo ítem
-                const newItem = {
-                    id: itemIdentifier,
-                    product_id: product.id,
-                    product_name: product.nombre,
-                    variant_id: variant.id,
-                    variant_description: `${variant.medida} - ${variant.altura}`,
-                    price: parseFloat(variant.precio),
-                    quantity: quantity,
-                    max_stock: variant.stock,
-                };
-                return [...prevItems, newItem];
+                // Si es nuevo, lo agregamos con formato limpio
+                return [...prevItems, {
+                    id: product.id, // ID del producto real (para backend)
+                    uniqueId: uniqueId, // ID interno del carrito
+                    variantId: variant.id,
+                    nombre: product.nombre,
+                    medida: variant.medida,
+                    precio: parseFloat(variant.precio),
+                    imagen: product.imagen, // Asegúrate de que tu producto tenga este campo o usa placeholder
+                    cantidad: quantity
+                }];
             }
         });
     };
 
-    // Función para calcular el total
-    const cartTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    // Función: Eliminar Item
+    const removeFromCart = (uniqueId) => {
+        setCartItems(prevItems => prevItems.filter(item => item.uniqueId !== uniqueId));
+    };
 
-    const contextValue = {
-        cartItems,
-        addItem,
-        cartTotal,
-        cartCount,
-        // Aquí puedes añadir removeItem, updateItemQuantity, clearCart, etc.
+    // Función: Vaciar Carrito
+    const clearCart = () => {
+        setCartItems([]);
     };
 
     return (
-        <CartContext.Provider value={contextValue}>
+        <CartContext.Provider value={{ 
+            cartItems, 
+            addToCart, 
+            removeFromCart, 
+            clearCart, 
+            total 
+        }}>
             {children}
         </CartContext.Provider>
     );

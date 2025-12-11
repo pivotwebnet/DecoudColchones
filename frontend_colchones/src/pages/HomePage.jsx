@@ -1,59 +1,120 @@
-// src/pages/HomePage.jsx (Rediseñado)
-import React from 'react';
+// src/pages/HomePage.jsx
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ImageCarousel from '../components/ImageCarousel';
+import ColchonCard from '../components/ColchonCard'; // <--- Importamos la tarjeta
+import { getProductos } from '../api/api'; // <--- Importamos la API
 
 const HomePage = () => {
+    const [latestProducts, setLatestProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNewest = async () => {
+            try {
+                const data = await getProductos();
+                // Lógica para "Lo Nuevo":
+                // Tomamos los últimos 4 productos del array (asumiendo que los últimos agregados están al final)
+                // Y los invertimos para que el más nuevo quede primero a la izquierda.
+                const newest = data.slice(-4).reverse();
+                setLatestProducts(newest);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error cargando productos destacados:", error);
+                setLoading(false);
+            }
+        };
+        fetchNewest();
+    }, []);
+
     return (
-        // La Home debe estar FUERA del .content-area para que se vea el fondo degradado
-        <div style={styles.homeContainer}>
-            <header style={styles.hero}>
-                <h1 style={styles.heroTitle}>La Cima del Descanso en Santa Fe</h1>
-                <p style={styles.heroSubtitle}>Colchones de alta densidad, resortes y tecnología de soporte, diseñados para tu bienestar.</p>
-                <Link to="/colchones" className="btn-primary" style={styles.heroButton}>
-                    Ver Catálogo Completo
-                </Link>
-            </header>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             
-            <section className="content-area"> {/* Las secciones internas usan el área blanca */}
-                <h2 style={styles.sectionTitle}>¿Por qué elegir Calidad y Soporte?</h2>
-                <div style={styles.featureGrid}>
-                    <div style={styles.featureItem}>
-                        <h4>Densidad Garantizada</h4>
-                        <p>Firmeza ideal para cualquier peso corporal, desde 70kg hasta 140kg.</p>
+            {/* 1. Carrusel Full Width */}
+            <section style={{ width: '100%', padding: 0 }}>
+                <ImageCarousel />
+            </section>
+            
+            {/* 2. SECCIÓN: LO NUEVO (Agregada) */}
+            <section className="container-centered" style={{ marginTop: '50px', marginBottom: '20px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                    <h2 style={{ 
+                        fontSize: '2.5rem', 
+                        color: '#e6e1e1ff', 
+                        marginBottom: '10px',
+                        fontWeight: 'bold'
+                    }}>
+                        ¡Lo nuevo!
+                    </h2>
+                    <div style={{ width: '60px', height: '4px', backgroundColor: 'var(--color-accent)', margin: '0 auto' }}></div>
+                </div>
+
+                {loading ? (
+                    <p style={{ textAlign: 'center' }}>Cargando novedades...</p>
+                ) : (
+                    <div style={styles.productsGrid}>
+                        {latestProducts.map(product => (
+                            <ColchonCard key={product.id} product={product} />
+                        ))}
                     </div>
-                    <div style={styles.featureItem}>
-                        <h4>Foco en Rafaela</h4>
-                        <p>Envíos rápidos y soporte local en Rafaela y toda la Provincia de Santa Fe.</p>
+                )}
+            </section>
+
+            {/* 3. Banner de Bienvenida / Características */}
+            <section className="container-centered content-area" style={{ marginTop: '40px', marginBottom: '60px' }}>
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <h2 style={{ fontSize: '2rem', color: 'var(--color-primary)', marginBottom: '10px' }}>
+                        Bienvenido a Decoud Colchones
+                    </h2>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', margin: '30px 0' }}>
+                        <Link to="/colchones" className="btn-primary">Ver Catálogo Completo</Link>
                     </div>
-                    <div style={styles.featureItem}>
-                        <h4>Variantes Personalizadas</h4>
-                        <p>Elige la altura y medida exacta de tu colchón de línea premium.</p>
+
+                    <div style={styles.featureGrid}>
+                        <div style={styles.featureItem}>
+                            <h4 style={styles.featTitle}>Calidad</h4>
+                            <p style={{ color: '#666' }}>Materiales de primera línea.</p>
+                        </div>
+                        <div style={styles.featureItem}>
+                            <h4 style={styles.featTitle}>Envíos</h4>
+                            <p style={{ color: '#666' }}>A todo Santa Fe.</p>
+                        </div>
+                        <div style={styles.featureItem}>
+                            <h4 style={styles.featTitle}>Garantía</h4>
+                            <p style={{ color: '#666' }}>Confianza asegurada.</p>
+                        </div>
                     </div>
                 </div>
             </section>
+
         </div>
     );
 };
 
 const styles = {
-    homeContainer: { minHeight: '100vh', display: 'flex', flexDirection: 'column' },
-    hero: {
-        textAlign: 'center',
-        padding: '100px 20px',
-        backgroundColor: 'transparent', // Transparente para ver el body degrade
-        color: 'var(--color-text-light)',
-        marginBottom: '20px',
-        flexShrink: 0,
+    // Grilla para los productos (Responsiva)
+    productsGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '30px',
+        width: '100%',
     },
-    heroTitle: { fontSize: '3.5em', marginBottom: '10px', textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' },
-    heroSubtitle: { fontSize: '1.2em', marginBottom: '30px' },
-    heroButton: { fontSize: '1.2em', padding: '12px 30px' },
-    sectionTitle: { textAlign: 'center', fontSize: '2em', color: 'var(--color-primary)', marginBottom: '30px' },
-    featureGrid: { display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' },
-    featureItem: { 
-        width: '30%', minWidth: '280px', padding: '20px', 
-        border: '1px solid #ddd', borderRadius: '8px', margin: '10px',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+    // Estilos de la sección de características
+    featureGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '30px',
+        marginTop: '40px'
+    },
+    featureItem: {
+        textAlign: 'center',
+        padding: '10px'
+    },
+    featTitle: {
+        fontSize: '1.2rem',
+        marginBottom: '10px',
+        color: 'var(--color-accent)'
     }
 };
 

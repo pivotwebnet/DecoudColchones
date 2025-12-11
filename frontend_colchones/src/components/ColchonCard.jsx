@@ -1,151 +1,164 @@
-// src/components/ColchonCard.jsx (VERSION MEJORADA)
-
+// src/components/ColchonCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ColchonCard = ({ product }) => {
-    // Cálculo del precio mínimo y máximo (ya maneja la lógica de variantes)
+    // 1. Lógica de precios
     const prices = product.variantes.map(v => parseFloat(v.precio)).filter(p => p > 0);
-    const minPrice = prices.length > 0 ? Math.min(...prices).toFixed(2) : 'Consultar';
-    const maxPrice = prices.length > 0 ? Math.max(...prices).toFixed(2) : minPrice;
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    
+    // 2. Formateador de moneda
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(price);
+    };
 
-    // Obtener las especificaciones clave de la línea
-    const composicion = product.categoria_nombre || 'Espuma / Resortes';
-    const soporte = `${product.peso_max_min}kg - ${product.peso_max_max}kg`;
-    const densidad = `${product.densidad} kg/m³`;
+    // 3. SEGURIDAD: Validar que el slug exista para evitar errores de ruta
+    const linkTarget = product.slug ? `/colchones/${product.slug}` : '#';
+
+    // Opcional: Avisar en consola si falta el slug para que puedas corregirlo en el admin
+    if (!product.slug) {
+        console.warn(`⚠️ El producto "${product.nombre}" no tiene SLUG. El enlace no funcionará.`);
+    }
 
     return (
-        <div style={styles.card}>
-            {/* Espacio para la Imagen (Placeholder) */}
-            <div style={styles.imagePlaceholder}>
-                <p>IMAGEN DEL COLCHÓN</p>
-            </div>
-            
-            {/* Nombre y Línea */}
-            <div style={styles.content}>
-                <h3 style={styles.title}>{product.nombre}</h3>
-                <p style={styles.linea}>{composicion}</p>
-                <hr style={styles.divider} />
+        <Link to={linkTarget} style={styles.cardLink}>
+            <div style={styles.card}>
                 
-                {/* Especificaciones Técnicas como Íconos/Tags */}
-                <div style={styles.specs}>
-                    <div style={styles.specItem}>
-                        <span style={styles.specLabel}>Soporte:</span>
-                        <span style={styles.specValue}>{soporte}</span>
-                    </div>
-                    <div style={styles.specItem}>
-                        <span style={styles.specLabel}>Densidad:</span>
-                        <span style={styles.specValue}>{densidad}</span>
+                <div style={styles.imageContainer}>
+                    <span style={styles.badge}>Envío Gratis</span>
+                    <div style={styles.placeholderImage}>
+                        {/* 4. MEJORA: Mostrar imagen real si existe, sino el placeholder */}
+                        {product.imagen ? (
+                            <img 
+                                src={product.imagen} 
+                                alt={product.nombre} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            />
+                        ) : (
+                            <span style={{ fontSize: '4rem', color: '#d1d5db' }}>
+                                {product.nombre.charAt(0)}
+                            </span>
+                        )}
                     </div>
                 </div>
 
-                {/* Sección de Precio Destacada */}
-                <div style={styles.priceContainer}>
-                    {minPrice !== maxPrice && (
-                         <p style={styles.priceLabel}>Desde:</p>
-                    )}
-                    <p style={styles.priceValue}>
-                        ${minPrice}
-                    </p>
-                </div>
+                <div style={styles.content}>
+                    <p style={styles.category}>{product.categoria_nombre || 'Colchones'}</p>
+                    <h3 style={styles.title}>{product.nombre}</h3>
+                    
+                    {/* Especificaciones rápidas (con validación por si faltan datos) */}
+                    <div style={styles.specs}>
+                        {product.densidad && <span>{product.densidad} kg/m³</span>}
+                        {product.peso_max_min && <span> • Soporta {product.peso_max_min}kg</span>}
+                    </div>
 
-                {/* Botón de Acción */}
-                <Link to={`/colchones/${product.slug}`} style={styles.button}>
-                    Ver Opciones y Variantes
-                </Link>
+                    <div style={styles.priceContainer}>
+                        <p style={styles.priceLabel}>Desde</p>
+                        <p style={styles.price}>{formatPrice(minPrice)}</p>
+                        <p style={styles.installments}>
+                            <span style={{color: 'var(--color-success)', fontWeight: 'bold'}}>12 cuotas</span> sin interés
+                        </p>
+                    </div>
+
+                    <button className="btn-primary" style={styles.button}>Ver Detalles</button>
+                </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
 const styles = {
+    cardLink: { textDecoration: 'none', color: 'inherit' },
     card: {
-        border: '1px solid #e0e0e0',
-        margin: '15px',
-        width: '320px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+        backgroundColor: 'white',
         borderRadius: '8px',
         overflow: 'hidden',
-        transition: 'transform 0.3s',
+        border: '1px solid #eee',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        cursor: 'pointer',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#fff',
     },
-    imagePlaceholder: {
-        height: '180px',
-        backgroundColor: '#f0f0f0',
+    imageContainer: {
+        height: '220px',
+        backgroundColor: '#f4f4f5',
+        position: 'relative',
         display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
-        fontSize: '14px',
-        color: '#888',
+        justifyContent: 'center',
+        overflow: 'hidden' // Importante para que la imagen no se salga
+    },
+    placeholderImage: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+    },
+    badge: {
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        backgroundColor: 'var(--color-success)',
+        color: 'white',
+        fontSize: '0.75rem',
+        fontWeight: 'bold',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        textTransform: 'uppercase',
+        zIndex: 2, // Asegura que esté sobre la imagen
     },
     content: {
-        padding: '15px',
+        padding: '20px',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        flexGrow: 1,
+    },
+    category: {
+        fontSize: '0.85rem',
+        color: '#6b7280',
+        marginBottom: '5px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
     },
     title: {
-        fontSize: '1.5em',
+        fontSize: '1.2rem',
         fontWeight: 'bold',
-        marginBottom: '5px',
-        color: '#333',
-    },
-    linea: {
-        fontSize: '0.9em',
-        color: '#5a5a5a',
+        color: 'var(--color-primary)',
         marginBottom: '10px',
-    },
-    divider: {
-        border: '0',
-        height: '1px',
-        backgroundColor: '#eee',
-        margin: '10px 0',
+        lineHeight: '1.3',
     },
     specs: {
+        fontSize: '0.9rem',
+        color: '#555',
         marginBottom: '15px',
-    },
-    specItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: '0.9em',
-        marginBottom: '3px',
-    },
-    specLabel: {
-        fontWeight: 'normal',
-        color: '#777',
-    },
-    specValue: {
-        fontWeight: 'bold',
-        color: '#333',
     },
     priceContainer: {
         marginTop: 'auto',
-        textAlign: 'center',
-        padding: '10px 0',
     },
     priceLabel: {
-        fontSize: '0.8em',
-        color: '#999',
+        fontSize: '0.8rem',
+        color: '#888',
         margin: 0,
     },
-    priceValue: {
-        fontSize: '2.2em',
-        fontWeight: 'bolder',
-        color: '#007bff', // Color de descuento/atención
-        margin: '0',
+    price: {
+        fontSize: '1.8rem',
+        fontWeight: '800',
+        color: '#333',
+        margin: '5px 0',
+    },
+    installments: {
+        fontSize: '0.9rem',
+        color: '#555',
+        marginBottom: '15px',
     },
     button: {
-        display: 'block',
-        textDecoration: 'none',
-        backgroundColor: '#007bff',
-        color: 'white',
-        padding: '10px',
-        borderRadius: '5px',
+        width: '100%',
         textAlign: 'center',
-        marginTop: '15px',
-        fontWeight: 'bold',
+        padding: '10px',
+        fontSize: '0.9rem',
     }
 };
 

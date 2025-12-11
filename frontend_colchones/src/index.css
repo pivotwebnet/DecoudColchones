@@ -1,72 +1,102 @@
 /* src/index.css */
 
-/* --- Variables Globales de Color --- */
+/* --- 1. Variables Globales --- */
 :root {
-  --color-primary: #1e3a8a; /* Azul oscuro (para texto, botones principales) */
-  --color-secondary: #0c4a6e; /* Azul más profundo para fondos/degrade */
-  --color-accent: #3b82f6; /* Azul claro (para hover, enlaces, acentos) */
-  --color-success: #10b981; /* Verde (para stock, éxito) */
-  --color-warning: #f59e0b; /* Amarillo/Naranja (para ofertas) */
-  --color-background-light: #f8fafc; /* Fondo general de componentes */
+  /* Dimensiones para el centrado */
+  --max-width-container: 1400px; 
+  
+  /* Tu Paleta de Colores (Azul Oscuro) */
+  --color-primary: #1e3a8a;       /* Azul oscuro (textos, botones) */
+  --color-secondary: #0c4a6e;     /* Azul profundo (fondos) */
+  --color-accent: #3b82f6;        /* Azul claro (hover, links) */
+  --color-success: #10b981;       /* Verde */
+  --color-warning: #f59e0b;       /* Naranja */
+  --color-background-light: #f8fafc; 
   --color-text-dark: #1f2937;
   --color-text-light: #e5e7eb;
 }
 
-/* --- Fondo Global con Degrade Azul Oscuro --- */
+/* --- 2. Reset y Fondo Global (Azul Oscuro) --- */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Arial', sans-serif;
   color: var(--color-text-dark);
-  /* Degradado principal de azul oscuro a azul más oscuro */
+  
+  /* FONDO PEDIDO: Degradado Azul Oscuro Fijo */
   background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
   min-height: 100vh;
-  background-attachment: fixed; /* Mantiene el degrade fijo al hacer scroll */
+  background-attachment: fixed; /* El fondo no se mueve al hacer scroll */
+  
+  /* Crucial para carrusel ancho completo: evita scroll horizontal */
+  overflow-x: hidden; 
 }
 
-/* Contenedor principal para centrar el contenido y mantener el degradado */
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Estilo para contenedores de contenido principal */
-.content-area {
-  flex-grow: 1;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco semitransparente sobre el degrade */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+/* --- 3. Clases de Utilidad para Diseño --- */
+
+/* CLASE MAESTRA: Úsala para centrar elementos (Header, Grillas de productos) */
+.container-centered {
+  width: 100%;
+  max-width: var(--max-width-container);
+  margin: 0 auto; /* Auto margin centra horizontalmente */
+  padding: 0 20px; /* Padding lateral para móviles */
+  box-sizing: border-box;
 }
 
-/* Estilos de Botones Primarios */
+/* CLASE PARA CONTENIDO: Caja blanca centrada sobre el fondo azul */
+.content-area {
+  flex-grow: 1;
+  width: 100%; /* Ocupa el ancho disponible */
+  max-width: var(--max-width-container); /* Pero no más de 1400px */
+  margin: 20px auto; /* Centrado automático */
+  padding: 30px;
+  
+  /* Estilo "Tarjeta Flotante" */
+  background-color: rgba(255, 255, 255, 0.95); /* Blanco semitransparente */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Sombra suave */
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+/* --- 4. Estilos de Botones --- */
+
 .btn-primary {
   background-color: var(--color-accent);
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
   border: none;
   cursor: pointer;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-primary:hover {
-  background-color: #1e40af; /* Tono más oscuro de acento */
+  background-color: #1e40af; /* Azul más oscuro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de elevación sutil */
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-/* Estilos de Botones de Logout/Peligro */
 .btn-danger {
   background-color: #dc2626;
   color: white;
-  padding: 8px 15px;
+  padding: 8px 16px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
 }
