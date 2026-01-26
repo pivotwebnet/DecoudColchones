@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import ImageCarousel from '../components/ImageCarousel';
 import ColchonCard from '../components/ColchonCard'; // <--- Importamos la tarjeta
 import { getProductos } from '../api/api'; // <--- Importamos la API
+import CategoryCards from '../components/CategoryCards';
+import ProductLines from '../components/ProductLines';
+
 
 const HomePage = () => {
     const [latestProducts, setLatestProducts] = useState([]);
@@ -34,21 +37,38 @@ const HomePage = () => {
             <section style={{ width: '100%', padding: 0 }}>
                 <ImageCarousel />
             </section>
+
+            {/* 2. NUEVO: TARJETAS DE CATEGORÍA AZULES */}
+            <section style={{ marginTop: '20px', position: 'relative', zIndex: 10 }}> 
+                {/* El margen negativo hace que se "monte" un poquito sobre el carrusel si quisieras, 
+                    o déjalo en '20px' para separar normal. Probemos '40px' normal. */}
+                
+                <div style={{ marginTop: '40px' }}>
+                     <CategoryCards />
+                </div>
+            </section>
+           
             
+{/* --- AGREGAR AQUÍ LA NUEVA SECCIÓN --- */}
+<section style={{ width: '100%', marginTop: '60px' }}>
+    <ProductLines />
+</section>
+{/* ------------------------------------- */}
+
+<section className="container-centered" style={{ marginTop: '60px', marginBottom: '20px' }}></section>
             {/* 2. SECCIÓN: LO NUEVO (Agregada) */}
-            <section className="container-centered" style={{ marginTop: '50px', marginBottom: '20px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
                     <h2 style={{ 
                         fontSize: '2.5rem', 
                         color: '#e6e1e1ff', 
                         marginBottom: '10px',
                         fontWeight: 'bold'
                     }}>
-                        ¡Lo nuevo!
+                        ¡Lo Nuevo!
                     </h2>
                     <div style={{ width: '60px', height: '4px', backgroundColor: 'var(--color-accent)', margin: '0 auto' }}></div>
                 </div>
-
+            <section className="container-centered" style={{ marginTop: '50px', marginBottom: '20px' }}>
                 {loading ? (
                     <p style={{ textAlign: 'center' }}>Cargando novedades...</p>
                 ) : (

@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
+import FAQPage from './pages/FAQPage';
 
 // Wrapper para centrar el contenido en páginas que NO son la Home
 const ContentWrapper = ({ element: Component }) => (
@@ -39,6 +40,7 @@ const App = () => {
                     <Route path="/login" element={<ContentWrapper element={LoginPage} />} />
                     <Route path="/register" element={<ContentWrapper element={RegisterPage} />} />
                     <Route path="/profile" element={<ContentWrapper element={ProfilePage} />} />
+                    <Route path="/preguntas-frecuentes" element={<FAQPage />} />
                     
                     <Route path="*" element={<h1 className="text-white text-center mt-10">404 - Página no encontrada</h1>} />
                 </Routes>
