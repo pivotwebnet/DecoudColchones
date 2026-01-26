@@ -6,11 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
-
-# Importar solo los modelos que existen actualmente
 from .models import Categoria, Producto, VarianteColchon, Pedido 
-# Importar solo los serializers correctos
 from .serializers import CategoriaSerializer, ProductoSerializer, PedidoCreateSerializer 
+from django.db.models import Q
+from rest_framework.decorators import api_view 
 
 # --- 1. ViewSet para Líneas de Colchones (Producto) ---
 
@@ -84,3 +83,18 @@ class PedidoViewSet(viewsets.ModelViewSet):
         else:
             print("Errores de validación:", serializer.errors) # Para ver en la consola negra
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+@api_view(['GET'])
+def search_products(request):
+    query = request.GET.get('q', '') # Obtiene lo que escribiste (?q=algo)
+    
+    if len(query) > 0:
+        # Busca por nombre O por descripción (icontains = ignora mayúsculas)
+        results = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion_base__icontains=query)
+        )[:5] # Limitamos a 5 resultados para no llenar la pantalla
+        
+        serializer = ProductoSerializer(results, many=True)
+        return Response(serializer.data)
+    
+    return Response([])

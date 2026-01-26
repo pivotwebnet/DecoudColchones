@@ -1,19 +1,13 @@
 // src/components/Header.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import SearchBar from './SearchBar'; // <--- Importamos el componente inteligente
 
 const Header = () => {
     const { totalItems } = useCart();
     const { user } = useAuth();
-    const [searchTerm, setSearchTerm] = useState('');
-    const navigate = useNavigate();
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        navigate(`/colchones?search=${searchTerm}`);
-    };
 
     // LINKS DE REDES
     const socialLinks = {
@@ -58,8 +52,8 @@ const Header = () => {
             </div>
 
             {/* 2. HEADER PRINCIPAL */}
-            <div style={{ backgroundColor: 'white', padding: '20px 0' }}>
-                <div className="container-centered" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', alignItems: 'center' }}>
+            <div style={{ backgroundColor: 'white', padding: '15px 0' }}>
+                <div className="container-centered" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', alignItems: 'center', gap: '20px' }}>
                     
                     {/* IZQUIERDA: LOGO */}
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
@@ -68,23 +62,12 @@ const Header = () => {
                         </Link>
                     </div>
 
-                    {/* CENTRO: BUSCADOR */}
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <form onSubmit={handleSearch} style={styles.searchForm}>
-                            <button type="submit" style={styles.searchBtn}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color:'#64748b'}}>
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                </svg>
-                            </button>
-                            <input 
-                                type="text" 
-                                placeholder="Buscar productos..." 
-                                style={styles.searchInput} 
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </form>
+                    {/* CENTRO: BUSCADOR INTELIGENTE */}
+                    {/* Reemplazamos el form manual por el componente SearchBar */}
+                    <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                        <div style={{ width: '100%', maxWidth: '500px' }}>
+                            <SearchBar />
+                        </div>
                     </div>
 
                     {/* DERECHA: ICONOS DE ACCIÓN */}
@@ -96,7 +79,7 @@ const Header = () => {
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                            {user && <span style={{fontSize:'0.8rem', marginLeft:'5px'}}>{user.first_name}</span>}
+                            {user && <span style={{fontSize:'0.85rem', marginLeft:'8px', fontWeight: '600'}}>{user.first_name}</span>}
                         </Link>
 
                         {/* Carrito */}
@@ -144,35 +127,6 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         transition: 'color 0.2s',
-    },
-    // Estilos del Buscador
-    searchForm: {
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: '#f8fafc',
-        borderRadius: '30px',
-        padding: '8px 20px', // Un poco más grande para ser el centro
-        border: '1px solid #e2e8f0',
-        width: '100%',
-        maxWidth: '400px', // Permitimos que sea más ancho en el centro
-        transition: 'border-color 0.2s, box-shadow 0.2s'
-    },
-    searchInput: {
-        border: 'none',
-        backgroundColor: 'transparent',
-        outline: 'none',
-        padding: '0 10px',
-        fontSize: '0.95rem',
-        width: '100%',
-        color: '#334155'
-    },
-    searchBtn: {
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: 0,
-        display: 'flex',
-        alignItems: 'center'
     },
     // Estilo Logo
     logo: {
