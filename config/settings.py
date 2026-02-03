@@ -14,7 +14,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9jj5vc5c98$gb%!2_sr)el!61c(s7vch#a&2sz&jz*xn4kcnso')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Si estamos en Render, DEBUG será False. En tu PC será True.
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ['*']
@@ -84,7 +83,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# Usa PostgreSQL en Render, o SQLite en tu PC
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -115,19 +113,23 @@ STATICFILES_DIRS = [
 ]
 
 # --- MEDIA FILES (Cloudinary) ---
-# Forzamos a Django a usar Cloudinary para subir imágenes
 MEDIA_URL = '/media/' 
 
-# --- STORAGES (Django 4.2+) ---
+# --- STORAGES ---
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Usamos el almacenamiento básico para evitar errores de compresión en Render
+        # Usamos almacenamiento estándar (SIN compresión) para evitar errores
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+# --- 5. CONFIGURACIÓN EXTRA DE WHITENOISE (¡ESTO FALTABA!) ---
+# Esto asegura que WhiteNoise sirva los archivos correctamente en Render
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
 
 # --- CLOUDINARY CONFIG ---
 CLOUDINARY_STORAGE = {
@@ -156,14 +158,10 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", 
     "http://127.0.0.1:5173",
-    "https://decoud-colchones.vercel.app", # Sin barra al final
+    "https://decoud-colchones.vercel.app",
 ]
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Si usas un modelo de usuario personalizado, descomenta esto:
-# AUTH_USER_MODEL = 'users.User'
 
 # --- JAZZMIN SETTINGS ---
 JAZZMIN_SETTINGS = {
@@ -175,13 +173,10 @@ JAZZMIN_SETTINGS = {
     "copyright": "Decoud Colchones Ltd",
     "search_model": "productos.Producto",
     
-    # Links superiores
     "topmenu_links": [
         {"name": "Ir a la Web (Local)",  "url": "http://localhost:5173", "new_window": True},
-        # Puedes agregar el link a Vercel aquí si quieres
     ],
 
-    # Iconos
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
@@ -225,6 +220,5 @@ JAZZMIN_UI_TWEAKS = {
     "main_bg_color": "#121212",
 }
 
-# Summernote
 X_FRAME_OPTIONS = 'SAMEORIGIN' 
 SUMMERNOTE_THEME = 'bs4'
