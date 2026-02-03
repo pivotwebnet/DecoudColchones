@@ -1,183 +1,194 @@
 // src/pages/FAQPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
 
 const FAQPage = () => {
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const toggleAccordion = (index) => {
+        if (activeIndex === index) {
+            setActiveIndex(null);
+        } else {
+            setActiveIndex(index);
+        }
+    };
+
+    const faqSections = [
+        {
+            title: "🚚 Envíos y Coordinación",
+            content: (
+                <>
+                    <div style={styles.highlightItem}>
+                        <h4 style={{ color: '#15803d', fontWeight: 'bold', marginBottom: '10px' }}>
+                            ✨ Ya hice mi compra, ¿cómo coordinamos?
+                        </h4>
+                        <p style={styles.answer}>
+                            <strong>¡Es muy sencillo!</strong> Una vez finalizada tu compra, <strong>escribinos a WhatsApp</strong> indicando tu número de pedido. Coordinamos día y hora personalmente.
+                        </p>
+                    </div>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>¿Realizan envíos a todo el país?</h4>
+                        <p style={styles.answer}>
+                            Llevamos nuestros productos desde Rafaela a gran parte del país. <br/>
+                            <small style={{color:'#d9534f'}}>*NO llegamos afuera del país.</small>
+                        </p>
+                    </div>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>¿Cuánto demora el envío?</h4>
+                        <p style={styles.answer}>
+                            El plazo estimado es de <strong>1 a 7 días hábiles</strong> dependiendo del destino.
+                        </p>
+                    </div>
+                </>
+            )
+        },
+        {
+            title: "💳 Garantía, Pagos y Facturación",
+            content: (
+                <>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>¿Los productos tienen garantía?</h4>
+                        <p style={styles.answer}>
+                            ¡Por supuesto! <strong>Somos fabricantes</strong>. Todos los productos tienen garantía escrita por defectos de fabricación.
+                        </p>
+                    </div>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>¿Qué medios de pago ofrecen?</h4>
+                        <ul style={styles.list}>
+                            <li><strong>Tarjetas:</strong> VISA, Mastercard, Amex, CABAL.</li>
+                            <li><strong>Transferencia y Efectivo.</strong></li>
+                        </ul>
+                    </div>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>Datos para Transferencia</h4>
+                        <div style={styles.bankBox}>
+                            <p><strong>Banco Galicia</strong></p>
+                            <p>Titular: Gustavo Antonio Decoud</p>
+                            <p>CBU: 0070111830004170156834</p>
+                            <p>ALIAS: BLOQUES.PLACAS</p>
+                        </div>
+                    </div>
+                </>
+            )
+        },
+        {
+            title: "🏭 Uso y Sobre Nosotros",
+            content: (
+                <>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>Mantenimiento: ¿El colchón se gira?</h4>
+                        <p style={styles.answer}>
+                            ¡Sí! Te recomendamos girarlo <strong>cada 6 meses</strong> para mayor durabilidad.
+                        </p>
+                    </div>
+                    <div style={styles.subItem}>
+                        <h4 style={styles.questionTitle}>¿De dónde son?</h4>
+                        <p style={styles.answer}>
+                            Somos de <strong>Rafaela, Santa Fe</strong>. Nuestro local está en <em>B. Iturraspe al 1948</em>.
+                        </p>
+                    </div>
+                </>
+            )
+        }
+    ];
+
     return (
         <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', padding: '60px 0' }}>
             <div className="container-centered" style={{ maxWidth: '800px' }}>
                 
-                {/* Título Principal */}
                 <h1 style={styles.pageTitle}>Preguntas Frecuentes</h1>
                 <p style={styles.intro}>
-                    Aquí reunimos las dudas más comunes. Somos una fábrica familiar, así que si necesitás saber algo más, no dudes en escribirnos directamente.
+                    Resolvemos tus dudas sobre compras, envíos y productos.
                 </p>
                 
-                <div style={styles.faqContainer}>
-                    
-                    {/* SECCIÓN: LO MÁS IMPORTANTE (ENVÍOS) */}
-                    <div style={styles.sectionTitle}>Envíos y Coordinación</div>
+                {/* --- ACORDEÓN --- */}
+                <div className="accordion" id="faqAccordion">
+                    {faqSections.map((section, index) => {
+                        const isOpen = activeIndex === index;
+                        return (
+                            <div className="accordion-item" key={index} style={{ marginBottom: '10px', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                                <h2 className="accordion-header">
+                                    <button 
+                                        className={`accordion-button ${isOpen ? '' : 'collapsed'}`} 
+                                        type="button" 
+                                        onClick={() => toggleAccordion(index)}
+                                        style={styles.accordionBtn} // AQUI ESTÁ LA CLAVE DEL ESTILO FLEX
+                                    >
+                                        {/* Título de la sección */}
+                                        <span style={{ flex: 1, textAlign: 'left' }}>{section.title}</span>
 
-                    {/* NUEVO: AVISO IMPORTANTE DE WHATSAPP */}
-                    <div style={styles.highlightItem}>
-                        <h2 style={{...styles.question, color: '#15803d'}}>✨ Ya hice mi compra, ¿cómo coordinamos el envío?</h2>
-                        <p style={styles.answer}>
-                            <strong>¡Es muy sencillo!</strong> Una vez finalizada tu compra, <strong>por favor escribinos a nuestro WhatsApp</strong> indicando tu número de pedido.
-                            <br /><br />
-                            Al ser productos de gran volumen, nos gusta coordinar personalmente con vos el día y la franja horaria de entrega para asegurarnos de que estés en casa para recibir tu nuevo descanso.
-                        </p>
-                    </div>
+                                        {/* --- FLECHA MANUAL --- */}
+                                        {/* Agregamos este SVG explícito para ver la flecha sí o sí */}
+                                        <svg 
+                                            width="20" 
+                                            height="20" 
+                                            viewBox="0 0 24 24" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            strokeWidth="2" 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round"
+                                            style={{
+                                                transition: 'transform 0.3s ease', // Animación de rotación
+                                                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', // Rota si está abierto
+                                                marginLeft: '15px',
+                                                color: '#1e3a8a'
+                                            }}
+                                        >
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
 
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿Realizan envíos a todo el país?</h2>
-                        <p style={styles.answer}>
-                            Llevamos nuestros productos desde Rafaela a gran parte del país. <br/>
-                            <small style={{color:'#d9534f'}}>*Actualmente NO llegamos a: Tierra del Fuego, Santa Cruz, Chubut, Río Negro, Neuquén, Salta, Jujuy, Formosa y Misiones.</small>
-                        </p>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿Cuánto demora el envío?</h2>
-                        <p style={styles.answer}>
-                            El plazo estimado es de <strong>10 a 21 días hábiles</strong>. Depende de tu ubicación y la logística, pero siempre trabajamos para que llegue lo antes posible.
-                        </p>
-                    </div>
-
-                    {/* SECCIÓN: GARANTÍA Y PAGOS */}
-                    <div style={styles.sectionTitle}>Garantía y Pagos</div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿Los productos tienen garantía?</h2>
-                        <p style={styles.answer}>
-                            ¡Por supuesto! <strong>Somos fabricantes</strong> y respaldamos nuestra calidad. Todos los productos tienen garantía directa de fábrica por cualquier defecto de elaboración que afecte su funcionalidad.
-                        </p>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿Qué medios de pago ofrecen?</h2>
-                        <ul style={styles.list}>
-                            <li><strong>Tarjetas de crédito:</strong> VISA, Mastercard, Amex y Cabal (Bancos autorizados).</li>
-                            <li><strong>Débito y Efectivo.</strong></li>
-                            <li><strong>Transferencia bancaria.</strong></li>
-                        </ul>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿En cuántas cuotas puedo pagar?</h2>
-                        <p style={styles.answer}>
-                            Hacemos un esfuerzo para ofrecerte <strong>hasta 12 cuotas sin interés</strong> con tarjetas de crédito bancarizadas. Queremos que tener un buen colchón sea posible.
-                        </p>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>Datos para Transferencia</h2>
-                        <div style={styles.bankBox}>
-                            <p><strong>Banco Macro</strong></p>
-                            <p>Titular: HARTMANN SA</p>
-                            <p>CBU: 2850891540095318791348</p>
-                            <p>CUIT: 30-71700117-2</p>
-                            <p>Nº Cuenta: 489109531879134</p>
-                            <p style={{marginTop:'10px', fontStyle:'italic', color:'#555'}}>*Recordá enviarnos el comprobante por WhatsApp.</p>
-                        </div>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿Hacen Factura A?</h2>
-                        <p style={styles.answer}>
-                            Sí. Como somos agentes de retención (Santa Fe y Misiones), necesitamos que nos envíes el <strong>Formulario 1276</strong> dentro de las 24hs de la compra. De lo contrario, emitiremos Factura B para no demorar tu envío.
-                        </p>
-                    </div>
-
-                    {/* SECCIÓN: USO Y SOBRE NOSOTROS */}
-                    <div style={styles.sectionTitle}>Uso y Sobre Nosotros</div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>Mantenimiento: ¿El colchón se gira?</h2>
-                        <p style={styles.answer}>
-                            ¡Sí! Te recomendamos girarlo <strong>cada 10 o 15 días</strong>. Esto ayuda a que los materiales se asienten parejo con tu peso y el colchón dure mucho más tiempo como nuevo.
-                        </p>
-                    </div>
-
-                    <div style={styles.item}>
-                        <h2 style={styles.question}>¿De dónde son?</h2>
-                        <p style={styles.answer}>
-                            Somos una empresa de <strong>Rafaela, Santa Fe</strong>. Tenemos más de 25 años de trayectoria fabricando descanso. Si andás por la ciudad, podés visitarnos en nuestro local de <em>Ituzaingó 194</em>.
-                        </p>
-                    </div>
-
+                                    </button>
+                                </h2>
+                                
+                                <div 
+                                    className="accordion-collapse"
+                                    style={{
+                                        maxHeight: isOpen ? '1500px' : '0px', 
+                                        overflow: 'hidden',
+                                        transition: 'max-height 0.4s ease-in-out, opacity 0.4s ease-in-out',
+                                        opacity: isOpen ? 1 : 0
+                                    }}
+                                >
+                                    <div className="accordion-body" style={{ padding: '20px 25px' }}>
+                                        {section.content}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
+
             </div>
         </div>
     );
 };
 
 const styles = {
-    pageTitle: {
-        fontSize: '2.5rem',
-        color: '#1e3a8a',
-        marginBottom: '10px',
-        fontWeight: 'bold',
-        textAlign: 'center'
+    pageTitle: { fontSize: '2.5rem', color: '#1e3a8a', marginBottom: '10px', fontWeight: 'bold', textAlign: 'center' },
+    intro: { textAlign: 'center', color: '#64748b', marginBottom: '40px', fontSize: '1.1rem' },
+    
+    // ESTILO IMPORTANTE DEL BOTÓN
+    accordionBtn: { 
+        fontSize: '1.1rem', 
+        fontWeight: 'bold', 
+        color: '#1e3a8a', 
+        backgroundColor: '#f8fafc', 
+        boxShadow: 'none',
+        display: 'flex',            // Para alinear título y flecha
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        width: '100%',
+        padding: '15px 20px',
+        border: 'none',
+        cursor: 'pointer'
     },
-    intro: {
-        textAlign: 'center',
-        color: '#666',
-        marginBottom: '50px',
-        fontSize: '1.1rem'
-    },
-    sectionTitle: {
-        fontSize: '1.5rem',
-        color: '#d4af37', // Dorado
-        borderBottom: '2px solid #eee',
-        paddingBottom: '10px',
-        marginTop: '30px',
-        marginBottom: '20px',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: '1px'
-    },
-    faqContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '30px'
-    },
-    item: {
-        paddingBottom: '20px'
-    },
-    highlightItem: {
-        backgroundColor: '#f0fdf4', // Fondo verde muy claro
-        padding: '25px',
-        borderRadius: '12px',
-        border: '1px solid #bbf7d0',
-        marginBottom: '10px'
-    },
-    question: {
-        fontSize: '1.3rem',
-        color: '#333',
-        marginBottom: '10px',
-        fontWeight: '700'
-    },
-    answer: {
-        fontSize: '1rem',
-        color: '#555',
-        lineHeight: '1.6',
-        margin: 0
-    },
-    list: {
-        fontSize: '1rem',
-        color: '#555',
-        lineHeight: '1.8',
-        paddingLeft: '20px',
-        marginBottom: '15px'
-    },
-    bankBox: {
-        backgroundColor: '#f8fafc',
-        padding: '20px',
-        borderRadius: '8px',
-        borderLeft: '4px solid #1e3a8a',
-        fontFamily: 'monospace',
-        fontSize: '0.95rem',
-        color: '#333'
-    }
+    
+    subItem: { marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px dashed #eee' },
+    questionTitle: { fontSize: '1.1rem', color: '#333', fontWeight: '700', marginBottom: '8px' },
+    answer: { fontSize: '0.95rem', color: '#555', lineHeight: '1.6', margin: 0 },
+    highlightItem: { backgroundColor: '#f0fdf4', padding: '20px', borderRadius: '8px', border: '1px solid #bbf7d0', marginBottom: '25px' },
+    list: { fontSize: '0.95rem', color: '#555', lineHeight: '1.8', paddingLeft: '20px', marginBottom: '10px' },
+    bankBox: { backgroundColor: '#f1f5f9', padding: '15px', borderRadius: '6px', borderLeft: '4px solid #1e3a8a', fontFamily: 'monospace', fontSize: '0.9rem', color: '#334155', marginTop: '10px' }
 };
 
 export default FAQPage;

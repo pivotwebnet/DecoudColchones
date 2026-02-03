@@ -3,10 +3,10 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const lines = [
-    { id: 1, name: "Box Prime", image: "/lines/box-prime.png", link: "/colchones?linea=box-prime" },
-    { id: 2, name: "Box Plus", image: "/lines/box-plus.png", link: "/colchones?linea=box-plus" },
-    { id: 3, name: "Manhattan", image: "/lines/manhattan.png", link: "/colchones?linea=manhattan" },
-    { id: 4, name: "Dubái", image: "/lines/dubai.png", link: "/colchones?linea=dubai" },
+    { id: 1, name: "LINEA DESEO", image: "/lines/box-prime.png", link: "/colchones?linea=box-prime" },
+    { id: 2, name: "LINEA CATARATA", image: "/lines/box-plus.png", link: "/colchones?linea=box-plus" },
+    { id: 3, name: "LINEA HORTENCIA", image: "/lines/manhattan.png", link: "/colchones?linea=manhattan" },
+    { id: 4, name: "LINEA NUBE", image: "/lines/dubai.png", link: "/colchones?linea=dubai" },
     // Puedes agregar más aquí si tienes
 ];
 
@@ -16,7 +16,7 @@ const ProductLines = () => {
     const scroll = (direction) => {
         const { current } = scrollRef;
         if (current) {
-            const scrollAmount = 350; // Cantidad de pixeles que mueve cada flecha
+            const scrollAmount = 500; // Cantidad de pixeles que mueve cada flecha
             current.scrollBy({
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
                 behavior: 'smooth'
@@ -37,7 +37,7 @@ const ProductLines = () => {
                 }}>
                     Líneas de productos
                 </h2>
-                <div style={{ width: '100px', height: '3px', backgroundColor: '#1e3a8a', margin: '10px auto' }}></div>
+                <div style={{ width: '500px', height: '3px', backgroundColor: '#1e3a8a', margin: '10px auto' }}></div>
             </div>
 
             {/* Contenedor del Slider (Flecha Izq + Carrusel + Flecha Der) */}
@@ -45,7 +45,7 @@ const ProductLines = () => {
                 
                 {/* Botón Izquierda */}
                 <button onClick={() => scroll('left')} style={styles.arrowBtn}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
 
                 {/* Lista de Imágenes (Scrollable) */}
@@ -86,7 +86,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '20px',
-        maxWidth: '1400px', // MÁS ANCHO que el contenedor normal (usualmente 1100px)
+        maxWidth: '1900px', // MÁS ANCHO que el contenedor normal (usualmente 1100px)
         margin: '0 auto',
         padding: '0 20px',
     },
@@ -114,7 +114,7 @@ const styles = {
         msOverflowStyle: 'none', // Ocultar en IE/Edge
     },
     itemCard: {
-        minWidth: '300px', // Ancho fijo de cada item
+        minWidth: '400px', // Ancho fijo de cada item
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -122,7 +122,7 @@ const styles = {
     },
     imageWrapper: {
         width: '100%',
-        height: '250px',
+        height: '400px',
         borderRadius: '4px', // Borde sutil como en la foto
         overflow: 'hidden',
         boxShadow: '0 4px 10px rgba(0,0,0,0.1)',

@@ -58,3 +58,12 @@ export const createPedido = async (pedidoData) => {
     }
 };
 
+export const getBanners = async () => {
+    try {
+        const response = await api.get('/banners/');
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener banners:", error);
+        return []; // Si falla, devuelve array vacío
+    }
+};

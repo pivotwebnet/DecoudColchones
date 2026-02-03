@@ -1,71 +1,103 @@
-// src/pages/CheckoutPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom'; // Importamos useLocation
-import { createPedido } from '../api/api'; 
+import { useNavigate } from 'react-router-dom';
+import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
+
+// INICIALIZACIÓN (Tu clave pública)
+initMercadoPago('TEST-9b98613c-74d8-478a-b84e-2c6b985ee3b6', { locale: 'es-AR' });
 
 const CheckoutPage = () => {
     const { cartItems, total, clearCart } = useCart();
-    const { user } = useAuth(); // Obtenemos el usuario del contexto
+    const { user } = useAuth();
     const navigate = useNavigate();
-    
-    // Estados del formulario
+
+    // 1. ESTADO DE TUS INPUTS
     const [formData, setFormData] = useState({
-        nombre: user?.first_name || '',
-        apellido: user?.last_name || '',
-        email: user?.email || '',
         telefono: '',
         direccion: '',
         ciudad: '',
         provincia: 'Santa Fe',
     });
-    const [loading, setLoading] = useState(false);
 
-    // --- PROTECCIÓN DE RUTA ---
+    // 2. EL ESPEJO (useRef)
+    // Esto guarda los datos sin que el componente de pago se entere
+    const formDataRef = useRef(formData);
     useEffect(() => {
-        // Si no hay usuario logueado...
-        if (!user) {
-            alert("Para finalizar la compra, necesitas iniciar sesión o registrarte.");
-            // Lo mandamos al Login
-            navigate('/login');
-        }
+        formDataRef.current = formData;
+    }, [formData]);
+
+    useEffect(() => {
+        if (!user) navigate('/login');
     }, [user, navigate]);
 
-    // Si no hay usuario, retornamos null para que no se vea el formulario ni un milisegundo
-    if (!user) return null;
-    // ---------------------------
+    // 3. CONFIGURACIÓN DEL BRICK (Memorizada)
+    const initialization = useMemo(() => ({
+        amount: Number(total) > 0 ? Number(total) : 100, // Nunca puede ser 0
+        payer: {
+            email: user?.email || 'test_user_999@test.com',
+            entity_type: 'individual', 
+        },
+    }), [total, user?.email]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const customization = useMemo(() => ({
+        paymentMethods: {
+            creditCard: "all",
+            debitCard: "all",
+            mercadoPago: "all",
+        },
+    }), []);
+
+    // 4. FUNCIÓN DE PAGO
+    const handlePaymentSubmit = useCallback(async ({ formData: paymentData }) => {
+        const currentFormData = formDataRef.current; // Leemos del espejo
+
+        // Validamos TUS campos
+        if (!currentFormData.telefono || !currentFormData.direccion || !currentFormData.ciudad) {
+            alert("⚠️ Por favor completa la dirección de envío arriba.");
+            return new Promise((resolve, reject) => reject());
+        }
+
         try {
-            // Construimos el objeto exacto que espera Django
-            const pedidoData = { 
+            const payload = {
+                ...paymentData,
+                ...currentFormData,
+                nombre: user?.first_name,
+                apellido: user?.last_name,
+                email: user?.email,
+                transaction_amount: total,
                 items: cartItems.map(item => ({
-                    variant_id: item.variantId, // ID de la variante (asegúrate que tu CartContext guarde esto)
-                    quantity: item.cantidad
-                })),
-                // Datos del comprador
-                nombre_completo: `${formData.nombre} ${formData.apellido}`,
-                email: formData.email,
-                direccion_envio: `${formData.direccion}, ${formData.ciudad}, ${formData.provincia}`,
-                ciudad: formData.ciudad
+                    id: item.id,
+                    title: item.nombre,
+                    quantity: item.cantidad,
+                    unit_price: item.precio
+                }))
             };
 
-            await createPedido(pedidoData);
-            
-            clearCart();
-            alert("¡Pedido realizado con éxito! Nos contactaremos contigo.");
-            navigate('/');
-        } catch (err) {
-            console.error(err);
-            alert("Hubo un error al procesar el pedido. Revisa que tu sesión no haya expirado.");
-            setLoading(false);
-        }
-    };
+            const response = await fetch("http://127.0.0.1:8000/api/procesar-pago/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
-    if (cartItems.length === 0) return <div style={{padding:'50px', textAlign:'center'}}>No hay items en el carrito.</div>;
+            const data = await response.json();
+
+            if (response.ok && data.status === "approved") {
+                clearCart();
+                alert(`¡Pago Aprobado! ID: ${data.id}`);
+                navigate('/');
+            } else {
+                console.error("Backend Error:", data);
+                alert("Pago rechazado. Revisa los datos de la tarjeta.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error de conexión.");
+        }
+    }, [total, cartItems, user, clearCart, navigate]);
+
+    if (!user) return null;
+    if (cartItems.length === 0) return <div style={{padding:'50px', textAlign:'center'}}>Carrito vacío</div>;
 
     return (
         <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', padding: '40px 0' }}>
@@ -73,59 +105,104 @@ const CheckoutPage = () => {
                 <h1 style={{ marginBottom: '30px', color: '#1e3a8a' }}>Finalizar Compra</h1>
                 
                 <div style={{display:'flex', gap:'30px', flexWrap:'wrap'}}>
+                    
                     <div style={{flex: 2, minWidth:'300px'}}>
-                        {/* Aviso de Envío */}
-                        <div style={{backgroundColor: '#fef9c3', border: '1px solid #facc15', borderRadius: '8px', padding: '20px', marginBottom: '25px', color: '#854d0e'}}>
-                            <strong>🚚 Coordinación de Envío:</strong> Al finalizar, nos comunicaremos al teléfono indicado para coordinar el transporte.
+                        
+                        {/* INPUTS DE ENVÍO */}
+                        <div style={{backgroundColor:'white', padding:'25px', borderRadius:'8px 8px 0 0', border:'1px solid #eee', borderBottom:'none'}}>
+                            <h3 style={{marginTop:0, color:'#333', fontSize:'1.1rem'}}>📍 ¿Dónde recibes el pedido?</h3>
+                            
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginBottom:'15px'}}>
+                                <input 
+                                    type="text" 
+                                    placeholder="Dirección" 
+                                    className="input-checkout"
+                                    value={formData.direccion} 
+                                    onChange={e=>setFormData({...formData, direccion:e.target.value})} 
+                                />
+                                <input 
+                                    type="tel" 
+                                    placeholder="Teléfono" 
+                                    className="input-checkout"
+                                    value={formData.telefono} 
+                                    onChange={e=>setFormData({...formData, telefono:e.target.value})} 
+                                />
+                            </div>
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px'}}>
+                                <input 
+                                    type="text" 
+                                    placeholder="Ciudad" 
+                                    className="input-checkout"
+                                    value={formData.ciudad} 
+                                    onChange={e=>setFormData({...formData, ciudad:e.target.value})} 
+                                />
+                                <input 
+                                    type="text" 
+                                    placeholder="Provincia" 
+                                    className="input-checkout"
+                                    value={formData.provincia} 
+                                    onChange={e=>setFormData({...formData, provincia:e.target.value})} 
+                                />
+                            </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} style={{backgroundColor:'white', padding:'30px', borderRadius:'8px', border:'1px solid #eee'}}>
-                            <h3 style={{marginTop:0, color:'#333'}}>Tus Datos</h3>
-                            <div style={{display:'flex', gap:'10px', marginBottom:'15px'}}>
-                                <input type="text" placeholder="Nombre" required name="nombre" value={formData.nombre} onChange={e=>setFormData({...formData, nombre:e.target.value})} style={{flex:1, padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} />
-                                <input type="text" placeholder="Apellido" required name="apellido" value={formData.apellido} onChange={e=>setFormData({...formData, apellido:e.target.value})} style={{flex:1, padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} />
-                            </div>
-
-                            <div style={{marginBottom:'15px'}}>
-                                <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>Teléfono (Crucial)</label>
-                                <input type="tel" required name="telefono" value={formData.telefono} onChange={e=>setFormData({...formData, telefono:e.target.value})} style={{width:'100%', padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} placeholder="Ej: 3492..." />
-                            </div>
-
-                            <div style={{marginBottom:'15px'}}>
-                                <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>Dirección de Entrega</label>
-                                <input type="text" required name="direccion" value={formData.direccion} onChange={e=>setFormData({...formData, direccion:e.target.value})} style={{width:'100%', padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} />
-                            </div>
-
-                            <div style={{display:'flex', gap:'10px', marginBottom:'20px'}}>
-                                <input type="text" placeholder="Ciudad" required name="ciudad" value={formData.ciudad} onChange={e=>setFormData({...formData, ciudad:e.target.value})} style={{flex:1, padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} />
-                                <input type="text" placeholder="Provincia" required name="provincia" value={formData.provincia} onChange={e=>setFormData({...formData, provincia:e.target.value})} style={{flex:1, padding:'10px', border:'1px solid #ccc', borderRadius:'4px'}} />
-                            </div>
-
-                            <button type="submit" disabled={loading} className="btn-primary" style={{width:'100%', fontSize:'1.1rem'}}>
-                                {loading ? 'Procesando...' : 'Confirmar Pedido'}
-                            </button>
-                        </form>
+                        {/* BRICK DE PAGO */}
+                        <div style={{backgroundColor:'white', padding:'25px', borderRadius:'0 0 8px 8px', border:'1px solid #eee', borderTop:'1px dashed #ddd'}}>
+                            <h3 style={{marginTop:0, color:'#333', fontSize:'1.1rem'}}>💳 Pago Seguro</h3>
+                            
+                            {/* EL COMPONENTE ESTÁTICO */}
+                            <Payment
+                                key="static-brick-v1" 
+                                initialization={initialization}
+                                customization={customization}
+                                onSubmit={handlePaymentSubmit}
+                            />
+                        </div>
                     </div>
 
-                    {/* Resumen Lateral */}
                     <div style={{flex: 1, minWidth:'300px'}}>
-                        <div style={{backgroundColor:'white', padding:'20px', borderRadius:'8px', border:'1px solid #eee'}}>
-                            <h3 style={{marginTop:0}}>Resumen</h3>
-                            {cartItems.map(item => (
-                                <div key={item.uniqueId} style={{display:'flex', justifyContent:'space-between', marginBottom:'10px', fontSize:'0.9rem'}}>
-                                    <span>{item.cantidad}x {item.nombre} <small>({item.medida})</small></span>
-                                    <b>${(item.precio * item.cantidad).toLocaleString('es-AR')}</b>
-                                </div>
-                            ))}
-                            <hr style={{margin:'15px 0', borderTop:'1px solid #eee'}} />
-                            <div style={{display:'flex', justifyContent:'space-between', fontSize:'1.2rem', fontWeight:'bold'}}>
+                        <div style={{backgroundColor:'white', padding:'20px', borderRadius:'8px', border:'1px solid #eee', position: 'sticky', top: '20px'}}>
+                            <h3>Resumen</h3>
+                            <div style={{display:'flex', justifyContent:'space-between', fontSize:'1.2rem', fontWeight:'bold', marginBottom: '20px'}}>
                                 <span>Total</span>
-                                <span>${total.toLocaleString('es-AR')}</span>
+                                <span>${Number(total).toLocaleString('es-AR')}</span>
                             </div>
+
+                            {/* --- AVISO RESALTADO DE ENVÍO --- */}
+                            <div style={{
+                                backgroundColor: '#fff3cd', 
+                                color: '#856404', 
+                                padding: '15px', 
+                                borderRadius: '6px', 
+                                border: '1px solid #ffeeba',
+                                fontSize: '0.95rem',
+                                lineHeight: '1.4',
+                                textAlign: 'center'
+                            }}>
+                                <strong>⚠️ ATENCIÓN:</strong><br/>
+                                Después de la compra, se tienen que comunicar por WhatsApp para coordinar el envío.
+                            </div>
+                            {/* -------------------------------- */}
+
                         </div>
                     </div>
                 </div>
             </div>
+             <style>{`
+                .input-checkout {
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    font-size: 1rem;
+                    background-color: #f9f9f9;
+                }
+                .input-checkout:focus {
+                    border-color: #009ee3;
+                    outline: none;
+                    background-color: #fff;
+                }
+            `}</style>
         </div>
     );
 };

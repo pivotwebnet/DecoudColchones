@@ -1,0 +1,58 @@
+/* DECOUD/static/css/dark_mode.css */
+
+/* 1. El fondo principal que ahora es blanco */
+.content-wrapper, body, html {
+    background-color: #121212 !important; /* Negro puro */
+    color: #e0e0e0 !important;
+}
+
+/* 2. Las cajas (Cards) donde están las tablas */
+.card {
+    background-color: #1e1e1e !important; /* Gris oscuro elegante */
+    border: 1px solid #333 !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+}
+
+/* 3. Las Tablas */
+.table {
+    color: #e0e0e0 !important;
+    background-color: #1e1e1e !important;
+}
+/* Filas impares más oscuras */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #252525 !important;
+}
+/* Efecto hover dorado suave */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+    color: #fff !important;
+}
+
+/* 4. Cabeceras de Tabla */
+thead th {
+    background-color: #000 !important;
+    color: #ffd700 !important; /* Texto Dorado */
+    border-bottom: 2px solid #ffd700 !important;
+}
+
+/* 5. Inputs y Buscadores */
+.form-control, .select2-container--default .select2-selection--single {
+    background-color: #2c2c2c !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+}
+
+/* 6. Textos y Títulos */
+h1, h2, h3, h4, h5, .breadcrumb-item.active {
+    color: #ffd700 !important; /* Títulos Dorados */
+}
+.breadcrumb-item a {
+    color: #fff !important;
+}
+
+/* 7. Footer */
+.main-footer {
+    background-color: #000 !important;
+    border-top: 1px solid #333 !important;
+    color: #888 !important;
+}
