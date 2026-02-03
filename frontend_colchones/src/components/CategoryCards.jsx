@@ -5,43 +5,46 @@ import { Link } from 'react-router-dom';
 const categories = [
     {
         id: 1,
-        title: "Colchones",
-        subtitle: "Espuma y Resortes de alta densidad",
-        image: "/categories/colchon.png", 
+        // Enlace optimizado automáticamente
+        image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_13c9vi13c9vi13c9_xyxwrd.png", 
         link: "/colchones?categoria=espuma"
     },
     {
         id: 2,
-        title: "En Caja",
-        subtitle: "La comodidad lista para llevar",
-        image: "/categories/caja.png",
+        // Enlace optimizado automáticamente
+        image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_u6pbwhu6pbwhu6pb_tyog8t.png",
         link: "/colchones?categoria=caja"
     },
     {
         id: 3,
-        title: "Sommiers",
-        subtitle: "Conjuntos completos y bases",
-        image: "/categories/sommier.png",
+        // Enlace optimizado automáticamente
+        image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127180/Gemini_Generated_Image_6u1sm16u1sm16u1s_kqo6df.png",
         link: "/colchones?categoria=sommier"
     }
 ];
 
 const CategoryCards = () => {
     return (
-        <div className="container-centered" style={{ margin: '60px auto' }}>
-            {/* Estilos CSS internos para el efecto Hover */}
+        <div className="container-centered" style={{ margin: '80px auto' }}>
+            
+            {/* CSS INTERNO PARA HOVER Y ANIMACIONES */}
             <style>
                 {`
                     .category-card {
-                        transition: transform 0.3s ease, box-shadow 0.3s ease;
+                        transition: transform 0.4s ease, box-shadow 0.4s ease;
                     }
                     .category-card:hover {
-                        transform: translateY(-8px);
-                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+                        transform: translateY(-10px);
+                        box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.3) !important;
                     }
-                    .category-card:hover .explore-arrow {
-                        transform: translateX(5px);
-                        color: var(--color-accent);
+                    /* Zoom suave en la imagen al pasar el mouse */
+                    .category-card:hover .bg-image {
+                        transform: scale(1.08);
+                    }
+                    /* El botón cambia de color */
+                    .category-card:hover .explore-btn {
+                        background-color: #f8fafc;
+                        color: #1e3a8a;
                     }
                 `}
             </style>
@@ -51,26 +54,24 @@ const CategoryCards = () => {
                     <Link to={cat.link} key={cat.id} style={styles.cardLink}>
                         <div className="category-card" style={styles.card}>
                             
-                            {/* Mitad Superior: Imagen con fondo suave */}
-                            <div style={styles.imageContainer}>
+                            {/* 1. IMAGEN DE FONDO (Ocupa todo) */}
+                            <div style={styles.imageWrapper}>
                                 <img 
                                     src={cat.image} 
                                     alt={cat.title} 
-                                    style={styles.image}
+                                    className="bg-image"
+                                    style={styles.bgImage}
                                     onError={(e) => e.target.style.display = 'none'}
                                 />
+                                {/* Capa oscura para que se lea el texto */}
+                                
                             </div>
                             
-                            {/* Mitad Inferior: Texto limpio */}
-                            <div style={styles.textContainer}>
-                                <div>
-                                    <h3 style={styles.title}>{cat.title}</h3>
-                                    <p style={styles.subtitle}>{cat.subtitle}</p>
-                                </div>
-                                <div style={styles.actionRow}>
-                                    <span style={styles.exploreText}>Ver colección</span>
-                                    <span className="explore-arrow" style={styles.arrow}>→</span>
-                                </div>
+                            {/* 2. TEXTO SUPERPUESTO */}
+                            <div style={styles.textOverlay}>
+                                <h3 style={styles.title}>{cat.title}</h3>
+                                <p style={styles.subtitle}>{cat.subtitle}</p>
+                                
                             </div>
 
                         </div>
@@ -84,76 +85,91 @@ const CategoryCards = () => {
 const styles = {
     grid: {
         display: 'grid',
+        // Tarjetas responsive: mínimo 300px de ancho
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '30px',
         justifyContent: 'center',
     },
     cardLink: {
         textDecoration: 'none',
+        height: '450px', // Altura fija para uniformidad
+        display: 'block',
     },
     card: {
-        backgroundColor: 'white',
-        borderRadius: '16px', // Bordes redondeados pero sutiles
+        position: 'relative',
+        borderRadius: '20px',
         overflow: 'hidden',
-        border: '1px solid #f3f4f6',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
         height: '100%',
+        backgroundColor: '#0f172a', // Fondo de respaldo
+    },
+    imageWrapper: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1,
+    },
+    bgImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // CLAVE: Hace que la imagen llene la tarjeta sin deformarse
+        transition: 'transform 0.6s ease',
+    },
+    darkOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        // Gradiente negro transparente (más oscuro abajo para el texto)
+        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%)',
+    },
+    textOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        padding: '40px 30px',
+        zIndex: 2,
         display: 'flex',
         flexDirection: 'column',
-    },
-    imageContainer: {
-        backgroundColor: '#f8fafc', // Gris muy claro, casi blanco
-        height: '240px',
-        display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        borderBottom: '1px solid #f3f4f6',
-    },
-    image: {
-        maxWidth: '85%',
-        maxHeight: '200px',
-        objectFit: 'contain',
-        filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))', // Sombra suave solo a la imagen
-    },
-    textContainer: {
-        padding: '25px',
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        gap: '20px',
+        textAlign: 'center',
     },
     title: {
-        fontSize: '1.5rem',
-        fontWeight: '700',
-        color: '#1e3a8a', // Azul corporativo
-        margin: '0 0 8px 0',
+        fontSize: '2.2rem',
+        fontWeight: '800',
+        color: 'white',
+        margin: '0 0 10px 0',
         letterSpacing: '-0.5px',
+        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
     },
     subtitle: {
-        fontSize: '0.95rem',
-        color: '#64748b', // Gris azulado para texto secundario
-        margin: 0,
-        lineHeight: '1.5',
+        fontSize: '1rem',
+        color: 'rgba(255,255,255,0.95)',
+        margin: '0 0 25px 0',
+        fontWeight: '500',
     },
-    actionRow: {
+    button: {
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
-        marginTop: 'auto',
+        backgroundColor: 'white',
+        color: '#1e3a8a',
+        padding: '12px 28px',
+        borderRadius: '50px',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
     },
-    exploreText: {
-        fontSize: '0.9rem',
-        fontWeight: '600',
-        color: '#334155',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px',
+    buttonText: {
+        fontSize: '0.85rem',
+        fontWeight: '700',
+        letterSpacing: '1px',
     },
     arrow: {
         fontSize: '1.2rem',
-        transition: 'transform 0.2s ease, color 0.2s ease',
-        color: '#94a3b8',
     }
 };
 

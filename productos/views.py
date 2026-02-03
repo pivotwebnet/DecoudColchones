@@ -1,12 +1,12 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
 
-from .models import Categoria, Producto, Pedido , Banner
-from .serializers import CategoriaSerializer, ProductoSerializer, PedidoSerializer, PedidoCreateSerializer, BannerSerializer
+from .models import Categoria, Producto, Pedido , Banner, LineaProducto
+from .serializers import CategoriaSerializer, ProductoSerializer, PedidoSerializer, PedidoCreateSerializer, BannerSerializer, LineaProductoSerializer
 
 # --- 1. Productos (ACCESO TOTAL - IGNORA TOKENS) ---
 class ProductoViewSet(viewsets.ModelViewSet):
@@ -64,3 +64,11 @@ class BannerViewSet(viewsets.ModelViewSet):
     serializer_class = BannerSerializer
     authentication_classes = [] # ¡Crucial! Ignora tokens
     permission_classes = [AllowAny] # ¡Crucial! Público
+    
+class LineaProductoList(generics.ListAPIView):
+    """
+    Vista pública para listar las líneas de productos en el Home.
+    """
+    queryset = LineaProducto.objects.filter(activa=True).order_by('orden')
+    serializer_class = LineaProductoSerializer
+    permission_classes = [AllowAny] # <--- CLAVE: Esto quita el candado

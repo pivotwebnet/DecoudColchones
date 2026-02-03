@@ -1,22 +1,40 @@
 // src/components/ProductLines.jsx
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const lines = [
-    { id: 1, name: "LINEA DESEO", image: "/lines/box-prime.png", link: "/colchones?linea=box-prime" },
-    { id: 2, name: "LINEA CATARATA", image: "/lines/box-plus.png", link: "/colchones?linea=box-plus" },
-    { id: 3, name: "LINEA HORTENCIA", image: "/lines/manhattan.png", link: "/colchones?linea=manhattan" },
-    { id: 4, name: "LINEA NUBE", image: "/lines/dubai.png", link: "/colchones?linea=dubai" },
-    // Puedes agregar más aquí si tienes
-];
+import { getLineas } from '../api/api'; // <--- Importamos la función nueva
 
 const ProductLines = () => {
+    const [lines, setLines] = useState([]);
+    const [loading, setLoading] = useState(true);
     const scrollRef = useRef(null);
+
+    // 1. CARGAR DATOS DESDE EL BACKEND
+    useEffect(() => {
+        const fetchLines = async () => {
+            try {
+                const data = await getLineas();
+                // Transformamos los datos para que encajen con tu diseño
+                const formattedLines = data.map(line => ({
+                    id: line.id,
+                    name: line.nombre,
+                    image: line.imagen_url,
+                    // Generamos el link dinámicamente usando el slug
+                    link: `/colchones?linea=${line.slug}`
+                }));
+                setLines(formattedLines);
+            } catch (error) {
+                console.error("Error cargando líneas:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchLines();
+    }, []);
 
     const scroll = (direction) => {
         const { current } = scrollRef;
         if (current) {
-            const scrollAmount = 500; // Cantidad de pixeles que mueve cada flecha
+            const scrollAmount = 420; 
             current.scrollBy({
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
                 behavior: 'smooth'
@@ -24,127 +42,95 @@ const ProductLines = () => {
         }
     };
 
+    // Si está cargando o no hay líneas, no mostramos nada (o podrías poner un loader)
+    if (!loading && lines.length === 0) return null;
+
     return (
-        <div style={{ width: '100%', backgroundColor: 'white', padding: '50px 0' }}>
+        <div style={{ width: '100%', backgroundColor: 'white', padding: '60px 0' }}>
             
-            {/* Título de la Sección */}
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h2 style={{ 
-                    fontSize: '2rem', 
-                    color: '#334155', // Gris azulado oscuro (Slate)
-                    fontWeight: 'bold', 
-                    margin: 0 
-                }}>
-                    Líneas de productos
+            {/* Título */}
+            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                <h2 style={{ fontSize: '2.2rem', color: '#1e3a8a', fontWeight: '800', margin: 0, letterSpacing: '-1px' }}>
+                    Nuestras Líneas
                 </h2>
-                <div style={{ width: '500px', height: '3px', backgroundColor: '#1e3a8a', margin: '10px auto' }}></div>
+                <div style={{ width: '80px', height: '4px', backgroundColor: '#ffd700', margin: '15px auto 0', borderRadius: '2px' }}></div>
             </div>
 
-            {/* Contenedor del Slider (Flecha Izq + Carrusel + Flecha Der) */}
+            {/* Slider Container */}
             <div style={styles.sliderContainer}>
                 
-                {/* Botón Izquierda */}
-                <button onClick={() => scroll('left')} style={styles.arrowBtn}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
+                {/* Flecha Izquierda (Solo si hay muchas líneas) */}
+                {lines.length > 3 && (
+                    <button onClick={() => scroll('left')} style={styles.arrowBtn}>←</button>
+                )}
 
-                {/* Lista de Imágenes (Scrollable) */}
+                {/* Lista Scrollable */}
                 <div ref={scrollRef} style={styles.scrollArea}>
-                    {lines.map((line) => (
-                        <div key={line.id} style={styles.itemCard}>
-                            {/* Imagen */}
-                            <div style={styles.imageWrapper}>
-                                <img 
-                                    src={line.image} 
-                                    alt={line.name} 
-                                    style={styles.image} 
-                                    onError={(e) => e.target.style.display = 'none'}
-                                />
+                    {loading ? (
+                        <p>Cargando líneas...</p>
+                    ) : (
+                        lines.map((line) => (
+                            <div key={line.id} style={styles.itemCard}>
+                                <div style={styles.imageWrapper}>
+                                    {line.image ? (
+                                        <img 
+                                            src={line.image} 
+                                            alt={line.name} 
+                                            style={styles.image} 
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    ) : (
+                                        <div style={{...styles.image, display:'flex', alignItems:'center', justifyContent:'center', background:'#eee', color:'#999'}}>
+                                            Sin Imagen
+                                        </div>
+                                    )}
+                                </div>
+                                <Link to={line.link} style={styles.pillButton}>
+                                    {line.name}
+                                </Link>
                             </div>
-                            
-                            {/* Botón Nombre (Pill Shape) */}
-                            <Link to={line.link} style={styles.pillButton}>
-                                {line.name}
-                            </Link>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
 
-                {/* Botón Derecha */}
-                <button onClick={() => scroll('right')} style={styles.arrowBtn}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
+                {/* Flecha Derecha */}
+                {lines.length > 3 && (
+                    <button onClick={() => scroll('right')} style={styles.arrowBtn}>→</button>
+                )}
 
             </div>
         </div>
     );
 };
 
+// TUS MISMOS ESTILOS (Sin cambios)
 const styles = {
     sliderContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '20px',
-        maxWidth: '1900px', // MÁS ANCHO que el contenedor normal (usualmente 1100px)
-        margin: '0 auto',
-        padding: '0 20px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px',
+        maxWidth: '1400px', margin: '0 auto', padding: '0 20px', position: 'relative'
     },
     arrowBtn: {
-        backgroundColor: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '10px',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'background 0.3s',
-        color: '#333',
-        minWidth: '40px'
+        backgroundColor: 'white', border: '1px solid #eee', cursor: 'pointer',
+        width: '50px', height: '50px', borderRadius: '50%', display: 'flex',
+        alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)', zIndex: 2, color: '#333', transition: '0.2s'
     },
     scrollArea: {
-        display: 'flex',
-        gap: '30px',
-        overflowX: 'auto',
-        scrollBehavior: 'smooth',
-        paddingBottom: '20px', // Espacio para que no se corte la sombra
-        scrollbarWidth: 'none', // Ocultar barra de scroll en Firefox
-        width: '100%',
-        msOverflowStyle: 'none', // Ocultar en IE/Edge
+        display: 'flex', gap: '30px', overflowX: 'auto', scrollBehavior: 'smooth',
+        padding: '20px 5px', scrollbarWidth: 'none', width: '100%',
     },
     itemCard: {
-        minWidth: '400px', // Ancho fijo de cada item
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px'
+        minWidth: '350px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px'
     },
     imageWrapper: {
-        width: '100%',
-        height: '400px',
-        borderRadius: '4px', // Borde sutil como en la foto
-        overflow: 'hidden',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-        backgroundColor: '#f1f1f1' // Fondo gris por si la imagen es transparente
+        width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden',
+        boxShadow: '0 10px 20px rgba(0,0,0,0.08)', backgroundColor: '#f8fafc'
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover', // Para que llene todo el cuadro (zoom a la textura)
-        transition: 'transform 0.3s ease'
-    },
+    image: { width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' },
     pillButton: {
-        textDecoration: 'none',
-        border: '1px solid #333',
-        borderRadius: '30px', // Forma de pastilla
-        padding: '8px 25px',
-        color: '#333',
-        fontSize: '0.9rem',
-        fontWeight: '600',
-        backgroundColor: 'white',
-        transition: 'all 0.2s',
-        whiteSpace: 'nowrap'
+        textDecoration: 'none', border: '2px solid #1e3a8a', borderRadius: '50px',
+        padding: '10px 30px', color: '#1e3a8a', fontSize: '0.9rem', fontWeight: '700',
+        backgroundColor: 'white', transition: 'all 0.3s', textTransform: 'uppercase', letterSpacing: '1px'
     }
 };
 

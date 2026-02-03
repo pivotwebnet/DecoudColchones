@@ -67,3 +67,8 @@ export const getBanners = async () => {
         return []; // Si falla, devuelve array vacío
     }
 };
+
+export const getLineas = async () => {
+    const response = await axios.get('http://127.0.0.1:8000/api/lineas/'); 
+    return response.data;
+};
