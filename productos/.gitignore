@@ -1,0 +1,28 @@
+# --- Python & Django ---
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+db.sqlite3
+*.sqlite3
+
+# --- Entornos Virtuales (NUNCA SUBIR ESTO) ---
+venv/
+env/
+.venv/
+.env/
+
+# --- Variables de Entorno (SECRETOS) ---
+.env
+
+# --- Archivos Estáticos y Media ---
+# Render generará los estáticos en el deploy
+staticfiles/
+# Las imágenes subidas por usuarios no van al repo (usamos Cloudinary)
+media/
+
+# --- IDEs y Sistema Operativo ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
