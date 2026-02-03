@@ -2,8 +2,12 @@
 
 import axios from 'axios';
 
+// 1. URL DINÁMICA: Detecta si estás en Vercel o en tu PC.
+// Nota: Quitamos la barra al final para evitar dobles barras (//) al unir con las rutas.
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/', 
+  baseURL: API_URL, 
   timeout: 5000,
 });
 
@@ -69,6 +73,8 @@ export const getBanners = async () => {
 };
 
 export const getLineas = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/api/lineas/'); 
+    // CAMBIO IMPORTANTE: Usamos la variable API_URL en lugar de la fija.
+    // Esto asegura que funcione tanto en local como en producción.
+    const response = await axios.get(`${API_URL}/lineas/`); 
     return response.data;
 };
