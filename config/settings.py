@@ -125,7 +125,7 @@ STORAGES = {
     },
     "staticfiles": {
         # Usamos el almacenamiento básico para evitar errores de compresión en Render
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
