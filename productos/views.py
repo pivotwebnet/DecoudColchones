@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
-
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 from .models import Categoria, Producto, Pedido , Banner, LineaProducto
 from .serializers import CategoriaSerializer, ProductoSerializer, PedidoSerializer, PedidoCreateSerializer, BannerSerializer, LineaProductoSerializer
 
@@ -72,3 +73,16 @@ class LineaProductoList(generics.ListAPIView):
     queryset = LineaProducto.objects.filter(activa=True).order_by('orden')
     serializer_class = LineaProductoSerializer
     permission_classes = [AllowAny] # <--- CLAVE: Esto quita el candado
+    
+def crear_admin_secreto(request):
+    # 1. Define aquí tu usuario y contraseña
+    nuevo_usuario = "admin_decoud"
+    nueva_clave = "decoud12345"  # ¡Pon una difícil!
+    email = "admin@decoud.com"
+
+    # 2. Verifica si ya existe para no romper nada
+    if not User.objects.filter(username=nuevo_usuario).exists():
+        User.objects.create_superuser(nuevo_usuario, email, nueva_clave)
+        return HttpResponse(f"✅ ¡ÉXITO! Usuario: {nuevo_usuario} / Clave: {nueva_clave} creado. <br><a href='/admin'>Ir al Login</a>")
+    else:
+        return HttpResponse(f"⚠️ El usuario {nuevo_usuario} YA existía. <a href='/admin'>Ir al Login</a>")
