@@ -1,18 +1,25 @@
-# Dependencias principales de Django
-Django==5.0.* # Usamos la versión 5.0 o la última estable de 5.x
-
-# Base de datos PostgreSQL
-psycopg2-binary==2.9.* # API REST y Serialización
-djangorestframework==3.15.* # Autenticación JWT para la API
-djangorestframework-simplejwt==5.3.* # Gestión de permisos CORS (Necesario para comunicación React <-> Django)
-django-cors-headers==4.3.* # Filtrado avanzado de catálogo (Opcional, si implementamos django-filter después)
-django-filter==24.2.*
-
-## ⚙️ Procedimiento para el Uso
-
-#Cuando necesites configurar el proyecto en un nuevo equipo o entorno, el proceso es simple
-
-### 1. Clonar el Repositorio
-
-#git clone https://github.com/Lautamendoza/DecoudColchones.git
-#cd DecoudColchones
+asgiref==3.11.0
+bleach==6.3.0
+certifi==2026.1.4
+charset-normalizer==3.4.4
+cloudinary==1.44.1
+Django==5.2.8
+django-cloudinary-storage==0.3.0
+django-cors-headers==4.9.0
+django-jazzmin==3.0.1
+django-summernote==0.8.20.0
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+idna==3.11
+mercadopago==2.3.0
+npm==0.1.1
+optional-django==0.1.0
+pillow==12.1.0
+psycopg2-binary==2.9.11
+PyJWT==2.10.1
+requests==2.32.5
+six==1.17.0
+sqlparse==0.5.3
+tzdata==2025.2
+urllib3==2.6.3
+webencodings==0.5.1
