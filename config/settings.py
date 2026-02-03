@@ -14,6 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9jj5vc5c98$gb%!2_sr)el!61c(s7vch#a&2sz&jz*xn4kcnso')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Si estamos en Render, DEBUG será False. En tu PC será True.
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ['*']
@@ -53,34 +54,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # Cors siempre arriba
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise justo después de Security
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60), # Aumenté un poco el tiempo para desarrollo
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "ROTATE_REFRESH_TOKENS": True,
-}
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    )
-}
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", 
-    "http://127.0.0.1:5173",
-    "https://decoud-colchones.vercel.app",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -104,6 +84,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
+# Usa PostgreSQL en Render, o SQLite en tu PC
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -113,37 +94,76 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 # Internationalization
-# CAMBIO: Configuración para Argentina
 LANGUAGE_CODE = 'es-ar'
-
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
-
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# --- STATIC FILES CONFIGURATION ---
 STATIC_URL = '/static/'
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+# --- MEDIA FILES (Cloudinary) ---
+# Forzamos a Django a usar Cloudinary para subir imágenes
+MEDIA_URL = '/media/' 
+
+# --- STORAGES (Django 4.2+) ---
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        # Usamos el almacenamiento básico para evitar errores de compresión en Render
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# --- CLOUDINARY CONFIG ---
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'djv3eauty', 
+    'API_KEY': '431898246464991', 
+    'API_SECRET': 'YQZBe99VVCx0hWldaF0MWwvPZWA',
+}
+
+# --- REST FRAMEWORK & JWT ---
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": True,
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    )
+}
+
+# --- CORS ---
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
+    "http://127.0.0.1:5173",
+    "https://decoud-colchones.vercel.app", # Sin barra al final
+]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Si usas un modelo de usuario personalizado, descomenta esto:
+# AUTH_USER_MODEL = 'users.User'
 
 # --- JAZZMIN SETTINGS ---
 JAZZMIN_SETTINGS = {
@@ -155,27 +175,24 @@ JAZZMIN_SETTINGS = {
     "copyright": "Decoud Colchones Ltd",
     "search_model": "productos.Producto",
     
-    # Menú superior
+    # Links superiores
     "topmenu_links": [
-        {"name": "Ir a la Web",  "url": "http://localhost:5173", "new_window": True},
+        {"name": "Ir a la Web (Local)",  "url": "http://localhost:5173", "new_window": True},
+        # Puedes agregar el link a Vercel aquí si quieres
     ],
 
-    # --- ICONOS PERSONALIZADOS (FontAwesome) ---
+    # Iconos
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "users.User": "fas fa-user",
-        
-        # Mis Apps
-        "productos.Banner": "fas fa-images",        # Icono de Imágenes
-        "productos.Producto": "fas fa-bed",         # Icono de Cama
-        "productos.Categoria": "fas fa-tags",       # Icono de Etiquetas
-        "productos.Pedido": "fas fa-shopping-cart", # Icono de Carrito de Compras
-        "productos.VarianteColchon": "fas fa-ruler-combined", # Icono de Regla/Medidas
+        "productos.Banner": "fas fa-images",
+        "productos.Producto": "fas fa-bed",
+        "productos.Categoria": "fas fa-tags",
+        "productos.Pedido": "fas fa-shopping-cart",
+        "productos.VarianteColchon": "fas fa-ruler-combined",
     },
 
-    # --- ORDEN DEL MENÚ LATERAL ---
-    # Ponemos primero los Pedidos y Productos, que es lo que más usará tu amigo
     "order_with_respect_to": [
         "productos.Pedido", 
         "productos.Producto", 
@@ -184,7 +201,6 @@ JAZZMIN_SETTINGS = {
         "auth"
     ],
 
-    # Tu CSS oscuro personalizado
     "custom_css": "css/dark_mode.css",
 }
 
@@ -193,64 +209,22 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    
-    # --- BARRA SUPERIOR (Negra) ---
     "brand_colour": "navbar-dark",
     "navbar": "navbar-dark",
     "no_navbar_border": False,
-    
-    # --- ACENTOS DORADOS (La clave) ---
-    # "warning" en Bootstrap es amarillo/dorado. Usamos esto para los detalles.
     "accent": "accent-warning", 
-    
-    # --- BARRA LATERAL (Negra con letras doradas) ---
     "sidebar": "sidebar-dark-warning", 
-    
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": True, # Esto hace que los sub-menús se metan un poco a la derecha
+    "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
-    
     "main_bg_color": "#121212",
 }
 
-# --- 1. CONFIGURACIÓN DE CLOUDINARY ---
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'djv3eauty', 
-    'API_KEY': '431898246464991', 
-    'API_SECRET': 'YQZBe99VVCx0hWldaF0MWwvPZWA',
-}
-
-# --- 2. CONFIGURACIÓN DE ALMACENAMIENTO (Django 5) ---
-# Esto le obliga a Django a usar Cloudinary para los archivos subidos (media)
-# y el sistema local solo para los archivos estáticos (css, js).
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
-
-# --- 3. URLS ---
-MEDIA_URL = '/media/'  # Necesario para que Cloudinary construya el link público
-# IMPORTANTE: NO pongas MEDIA_ROOT. Si lo pones, Django podría confundirse.
-# AUTH_USER_MODEL = 'users.User'
-
-STATIC_URL = '/static/'
-
-# AGREGAR ESTO SI NO LO TIENES:
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-# Permite que Summernote funcione dentro del admin
+# Summernote
 X_FRAME_OPTIONS = 'SAMEORIGIN' 
-
-# Configuración opcional para que se vea mejor
 SUMMERNOTE_THEME = 'bs4'
