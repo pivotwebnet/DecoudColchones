@@ -117,49 +117,55 @@ class VarianteColchon(models.Model):
 
 # --- 4. Pedido (Tus personalizaciones intactas) ---
 class Pedido(models.Model):
-    usuario = models.ForeignKey(User, related_name='pedidos', on_delete=models.CASCADE, null=True, blank=True)
-    nombre_completo = models.CharField(max_length=150)
-    email = models.EmailField()
-    telefono = models.CharField(max_length=50) 
-    direccion_envio = models.CharField(max_length=250)
-    ciudad = models.CharField(max_length=100)
-    provincia = models.CharField(max_length=100, default='Santa Fe') 
+    # Datos del Cliente
+    nombre_cliente = models.CharField(max_length=100)
+    apellido_cliente = models.CharField(max_length=100)
+    dni_cliente = models.CharField(max_length=20)
+    telefono_contacto = models.CharField(max_length=50)
     
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    total_neto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
-    ESTADO_CHOICES = [
-        ('PENDIENTE', 'Pendiente de Pago'),
-        ('PAGADO', 'Pagado'),
-        ('ENVIADO', 'Enviado'),
-        ('ENTREGADO', 'Entregado'),
-        ('CANCELADO', 'Cancelado'),
-    ]
-    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='PENDIENTE')
-    merchant_order_id = models.CharField(max_length=100, blank=True, null=True)
-    payment_id = models.CharField(max_length=100, blank=True, null=True)
+    # --- CAMBIOS AQUÍ ---
+    direccion_envio = models.CharField(max_length=255) # Ahora solo guardamos Calle y Altura
+    ciudad = models.CharField(max_length=100)          # NUEVO: Para filtrar por ciudad
+    provincia = models.CharField(max_length=100, default='Santa Fe') # NUEVO: Para filtrar por provincia
+    # --------------------
 
-    class Meta:
-        ordering = ('-fecha_creacion',)
-        verbose_name_plural = 'Pedidos'
+    metodo_pago = models.CharField(max_length=50, default='Mercado Pago')
+    total_neto = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.CharField(max_length=20, default='pendiente')
+    fecha_creacion = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
-        return f'Pedido #{self.id} - {self.nombre_completo}'
+        return f"Pedido #{self.id} - {self.nombre_cliente} ({self.ciudad})"
+
+    class Meta:
+        ordering = ['-fecha_creacion']
 
 # --- 5. Item Pedido (Intacto) ---
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, related_name='items', on_delete=models.CASCADE)
-    producto_linea = models.CharField(max_length=200)
-    medida_altura = models.CharField(max_length=100)
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # CAMBIO IMPORTANTE: Ahora es una relación directa con el Producto
+    # Esto permite que el Admin muestre el producto real y no solo un texto.
+    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True)
+    
+    # Opcional: Guardamos la variante si existe
+    variante_original = models.ForeignKey(VarianteColchon, on_delete=models.SET_NULL, null=True, blank=True) 
+
+    # Guardamos los datos "congelados" al momento de la compra
     cantidad = models.IntegerField(default=1)
-    variante_original = models.ForeignKey(VarianteColchon, on_delete=models.SET_NULL, null=True) 
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Campo opcional si quieres guardar el nombre como texto por si se borra el producto
+    # nombre_producto = models.CharField(max_length=200, blank=True) 
 
     def get_costo(self):
         return self.precio_unitario * self.cantidad
         
     def __str__(self):
-        return f'{self.cantidad}x {self.producto_linea}'
+        # CORREGIDO: Usamos self.producto.nombre en lugar de producto_linea
+        if self.producto:
+            return f'{self.cantidad}x {self.producto.nombre}'
+        return f'{self.cantidad}x Producto Eliminado'
 
 # --- 6. Banner (Intacto) ---
 class Banner(models.Model):

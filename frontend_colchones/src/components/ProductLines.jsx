@@ -44,7 +44,7 @@ const ProductLines = () => {
 
     // Si está cargando o no hay líneas, no mostramos nada (o podrías poner un loader)
     if (!loading && lines.length === 0) return null;
-
+            
     return (
         <div style={{ width: '100%', backgroundColor: 'white', padding: '60px 0' }}>
             

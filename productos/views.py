@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status, generics, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -16,6 +16,9 @@ class ProductoViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     authentication_classes = [] # <--- ESTO ES LA CLAVE: Ignora el token del frontend
     permission_classes = [AllowAny] 
+    
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['nombre', 'descripcion_base']
 
 # --- 2. Categorías (ACCESO TOTAL - IGNORA TOKENS) ---
 class CategoriaViewSet(viewsets.ModelViewSet):
@@ -74,15 +77,3 @@ class LineaProductoList(generics.ListAPIView):
     serializer_class = LineaProductoSerializer
     permission_classes = [AllowAny] # <--- CLAVE: Esto quita el candado
     
-def crear_admin_secreto(request):
-    # 1. Define aquí tu usuario y contraseña
-    nuevo_usuario = "admin_decoud"
-    nueva_clave = "decoud12345"  # ¡Pon una difícil!
-    email = "admin@decoud.com"
-
-    # 2. Verifica si ya existe para no romper nada
-    if not User.objects.filter(username=nuevo_usuario).exists():
-        User.objects.create_superuser(nuevo_usuario, email, nueva_clave)
-        return HttpResponse(f"✅ ¡ÉXITO! Usuario: {nuevo_usuario} / Clave: {nueva_clave} creado. <br><a href='/admin'>Ir al Login</a>")
-    else:
-        return HttpResponse(f"⚠️ El usuario {nuevo_usuario} YA existía. <a href='/admin'>Ir al Login</a>")

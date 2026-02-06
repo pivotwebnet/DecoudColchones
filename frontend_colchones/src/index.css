@@ -1,34 +1,36 @@
 /* src/index.css */
 
-/* --- 1. Variables Globales --- */
+/* --- 1. Variables Globales (Paleta Decoud) --- */
 :root {
-  /* Dimensiones para el centrado */
+  /* Dimensiones */
   --max-width-container: 1400px; 
   
-  /* Tu Paleta de Colores (Azul Oscuro) */
-  --color-primary: #1e3a8a;       /* Azul oscuro (textos, botones) */
-  --color-secondary: #0c4a6e;     /* Azul profundo (fondos) */
-  --color-accent: #3b82f6;        /* Azul claro (hover, links) */
-  --color-success: #10b981;       /* Verde */
-  --color-warning: #f59e0b;       /* Naranja */
-  --color-background-light: #f8fafc; 
-  --color-text-dark: #1f2937;
-  --color-text-light: #e5e7eb;
+  /* PALETA DE MARCA DECOUD */
+  --decoud-blue: #1B365D;       /* Azul Berkeley (Headers, Textos fuertes) */
+  --decoud-blue-dark: #0F213A;  /* Azul Noche (Footer, Fondos oscuros) */
+  --decoud-gold: #D4AF37;       /* Dorado Metálico (Botones, Precios, Acentos) */
+  --decoud-gold-hover: #b3922a; /* Dorado más oscuro para hover */
+  --decoud-white: #f1f0e2;      /* Blanco Humo (Fondo general) */
+  
+  /* Variables Funcionales (Mapeadas a la marca) */
+  --color-primary: var(--decoud-blue);    
+  --color-secondary: var(--decoud-gold);  
+  --color-text-dark: #333333;
+  --color-text-light: #f3f4f6;
 }
 
-/* --- 2. Reset y Fondo Global (Azul Oscuro) --- */
+/* --- 2. Reset y Fondo Global --- */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif; /* Fuente moderna */
   color: var(--color-text-dark);
   
-  /* FONDO PEDIDO: Degradado Azul Oscuro Fijo */
-  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  /* FONDO: Blanco suave para limpieza y amplitud */
+  background-color: var(--decoud-white);
   min-height: 100vh;
-  background-attachment: fixed; /* El fondo no se mueve al hacer scroll */
   
-  /* Crucial para carrusel ancho completo: evita scroll horizontal */
+  /* Crucial para carrusel ancho completo */
   overflow-x: hidden; 
 }
 
@@ -40,50 +42,73 @@ body {
 
 /* --- 3. Clases de Utilidad para Diseño --- */
 
-/* CLASE MAESTRA: Úsala para centrar elementos (Header, Grillas de productos) */
+/* CLASE MAESTRA: Centrado */
 .container-centered {
   width: 100%;
   max-width: var(--max-width-container);
-  margin: 0 auto; /* Auto margin centra horizontalmente */
-  padding: 0 20px; /* Padding lateral para móviles */
+  margin: 0 auto;
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
-/* CLASE PARA CONTENIDO: Caja blanca centrada sobre el fondo azul */
+/* CLASE PARA CONTENIDO: Limpia y sin bordes pesados */
 .content-area {
   flex-grow: 1;
-  width: 100%; /* Ocupa el ancho disponible */
-  max-width: var(--max-width-container); /* Pero no más de 1400px */
-  margin: 20px auto; /* Centrado automático */
+  width: 100%;
+  max-width: var(--max-width-container);
+  margin: 20px auto;
   padding: 30px;
   
-  /* Estilo "Tarjeta Flotante" */
-  background-color: rgba(255, 255, 255, 0.95); /* Blanco semitransparente */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Sombra suave */
-  border-radius: 12px;
+  /* Fondo blanco puro para que el contenido respire */
+  background-color: #ffffff;
+  /* Sombra muy sutil para dar elegancia */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+  border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* --- 4. Estilos de Botones --- */
+/* --- 4. Estilos de Botones (Brand Identity) --- */
 
+/* Botón Principal (Comprar/Acción): DORADO */
 .btn-primary {
-  background-color: var(--color-accent);
-  color: white;
+  background-color: var(--decoud-gold);
+  color: var(--decoud-blue); /* Texto azul sobre dorado queda muy premium */
   padding: 12px 24px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
+  text-transform: uppercase; /* Letras mayúsculas para más fuerza */
+  letter-spacing: 0.5px;
   transition: all 0.3s ease;
-  border: none;
+  border: 1px solid var(--decoud-gold);
   cursor: pointer;
   display: inline-block;
   text-align: center;
 }
 
 .btn-primary:hover {
-  background-color: #1e40af; /* Azul más oscuro al pasar el mouse */
-  transform: translateY(-2px); /* Efecto de elevación sutil */
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background-color: var(--decoud-gold-hover);
+  border-color: var(--decoud-gold-hover);
+  color: #fff; /* Texto blanco al pasar el mouse */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4); /* Sombra dorada */
+}
+
+/* Botón Secundario (Ver más/Detalles): AZUL */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--decoud-blue);
+    border: 2px solid var(--decoud-blue);
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--decoud-blue);
+    color: white;
 }
 
 .btn-danger {
@@ -100,3 +125,11 @@ body {
 .btn-danger:hover {
   background-color: #b91c1c;
 }
+
+/* --- 5. Utilidades de Texto y Fondo (NUEVO) --- */
+/* Úsalas en tus componentes: className="text-gold" o className="bg-blue" */
+
+.text-gold { color: var(--decoud-gold); }
+.text-blue { color: var(--decoud-blue); }
+.bg-blue { background-color: var(--decoud-blue); color: white; }
+.bg-gold { background-color: var(--decoud-gold); color: var(--decoud-blue); }

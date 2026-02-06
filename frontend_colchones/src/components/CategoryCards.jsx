@@ -1,175 +1,186 @@
 // src/components/CategoryCards.jsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const categories = [
     {
         id: 1,
-        // Enlace optimizado automáticamente
+        title: "Colchones",
         image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_13c9vi13c9vi13c9_xyxwrd.png", 
         link: "/colchones?categoria=espuma"
     },
     {
         id: 2,
-        // Enlace optimizado automáticamente
+        title: "En Caja",
         image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_u6pbwhu6pbwhu6pb_tyog8t.png",
         link: "/colchones?categoria=caja"
     },
     {
         id: 3,
-        // Enlace optimizado automáticamente
+        title: "Sommiers",
         image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127180/Gemini_Generated_Image_6u1sm16u1sm16u1s_kqo6df.png",
-        link: "/colchones?categoria=sommier"
+        link: "/colchones?categoria=sommiers"
     }
 ];
 
 const CategoryCards = () => {
-    return (
-        <div className="container-centered" style={{ margin: '80px auto' }}>
-            
-            {/* CSS INTERNO PARA HOVER Y ANIMACIONES */}
-            <style>
-                {`
-                    .category-card {
-                        transition: transform 0.4s ease, box-shadow 0.4s ease;
-                    }
-                    .category-card:hover {
-                        transform: translateY(-10px);
-                        box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.3) !important;
-                    }
-                    /* Zoom suave en la imagen al pasar el mouse */
-                    .category-card:hover .bg-image {
-                        transform: scale(1.08);
-                    }
-                    /* El botón cambia de color */
-                    .category-card:hover .explore-btn {
-                        background-color: #f8fafc;
-                        color: #1e3a8a;
-                    }
-                `}
-            </style>
+    const scrollRef = useRef(null);
 
-            <div style={styles.grid}>
-                {categories.map((cat) => (
-                    <Link to={cat.link} key={cat.id} style={styles.cardLink}>
-                        <div className="category-card" style={styles.card}>
-                            
-                            {/* 1. IMAGEN DE FONDO (Ocupa todo) */}
-                            <div style={styles.imageWrapper}>
+    const scroll = (direction) => {
+        const { current } = scrollRef;
+        if (current) {
+            const scrollAmount = current.clientWidth / 2;
+            current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    return (
+        <section style={styles.section}>
+            {/* Título más discreto */}
+            <h2 style={styles.mainTitle}>Categorías Destacadas</h2>
+            
+            <div style={styles.carouselContainer}>
+                <button onClick={() => scroll('left')} className="nav-btn left">‹</button>
+
+                <div ref={scrollRef} style={styles.track} className="track">
+                    {categories.map((cat) => (
+                        <Link to={cat.link} key={cat.id} style={styles.card} className="category-card">
+                            <div style={styles.imageWrapper} className="img-wrapper">
                                 <img 
                                     src={cat.image} 
                                     alt={cat.title} 
-                                    className="bg-image"
-                                    style={styles.bgImage}
-                                    onError={(e) => e.target.style.display = 'none'}
+                                    style={styles.image} 
                                 />
-                                {/* Capa oscura para que se lea el texto */}
-                                
+                                <div style={styles.overlay}></div>
                             </div>
                             
-                            {/* 2. TEXTO SUPERPUESTO */}
-                            <div style={styles.textOverlay}>
-                                <h3 style={styles.title}>{cat.title}</h3>
-                                <p style={styles.subtitle}>{cat.subtitle}</p>
-                                
-                            </div>
+                            <h3 style={styles.categoryTitle}>
+                                {cat.title}
+                            </h3>
+                        </Link>
+                    ))}
+                </div>
 
-                        </div>
-                    </Link>
-                ))}
+                <button onClick={() => scroll('right')} className="nav-btn right">›</button>
             </div>
-        </div>
+
+            <style>{`
+                .track::-webkit-scrollbar { display: none; }
+                
+                .img-wrapper img { transition: transform 0.7s ease; }
+                .category-card:hover .img-wrapper img { transform: scale(1.05); }
+
+                /* Flechas más pequeñas */
+                .nav-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: white;
+                    border: none;
+                    width: 35px; height: 35px; /* Más chicas */
+                    border-radius: 50%;
+                    font-size: 1.5rem;
+                    color: #1B365D;
+                    cursor: pointer;
+                    z-index: 10;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    display: flex; align-items: center; justify-content: center;
+                    padding-bottom: 4px;
+                    opacity: 0; 
+                    transition: opacity 0.3s;
+                    pointer-events: none;
+                }
+                
+                .carouselContainer:hover .nav-btn { opacity: 0.9; pointer-events: auto; }
+                .nav-btn:hover { background: #1B365D; color: white; }
+                .nav-btn.left { left: 10px; }
+                .nav-btn.right { right: 10px; }
+
+                @media (max-width: 768px) {
+                    .nav-btn { display: none; }
+                }
+            `}</style>
+        </section>
     );
 };
 
 const styles = {
-    grid: {
-        display: 'grid',
-        // Tarjetas responsive: mínimo 300px de ancho
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '30px',
-        justifyContent: 'center',
+    section: {
+        width: '100%',     
+        maxWidth: '100%',  
+        margin: '30px 0', // Menos margen vertical
+        padding: '0',      
+        fontFamily: "'Helvetica', sans-serif",
+        position: 'relative'
     },
-    cardLink: {
-        textDecoration: 'none',
-        height: '450px', // Altura fija para uniformidad
-        display: 'block',
+    mainTitle: {
+        color: '#1B365D',
+        textAlign: 'center',
+        fontSize: '1.5rem', // Título más chico (era 2rem)
+        marginBottom: '20px', // Menos espacio
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '1px'
+    },
+    carouselContainer: {
+        position: 'relative',
+        width: '100%',
+        className: 'carouselContainer'
+    },
+    track: {
+        display: 'flex',
+        width: '100%',
+        // CAMBIO CLAVE: Altura reducida para no competir con el Hero
+        height: '280px', 
+        overflowX: 'auto',
+        scrollSnapType: 'x mandatory',
+        scrollbarWidth: 'none',
+        scrollBehavior: 'smooth',
+        gap: '2px', 
     },
     card: {
-        position: 'relative',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+        flex: '1', 
+        minWidth: '260px', // Un poco más angostas en móvil
         height: '100%',
-        backgroundColor: '#0f172a', // Fondo de respaldo
+        position: 'relative',
+        textDecoration: 'none',
+        scrollSnapAlign: 'start',
+        backgroundColor: '#f5f5f5',
+        overflow: 'hidden',
     },
     imageWrapper: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
         width: '100%',
         height: '100%',
-        zIndex: 1,
+        position: 'relative',
     },
-    bgImage: {
+    image: {
         width: '100%',
         height: '100%',
-        objectFit: 'cover', // CLAVE: Hace que la imagen llene la tarjeta sin deformarse
-        transition: 'transform 0.6s ease',
+        objectFit: 'cover', // Se recorta automáticamente para encajar en la nueva altura
     },
-    darkOverlay: {
+    overlay: {
         position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        // Gradiente negro transparente (más oscuro abajo para el texto)
-        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%)',
+        top: 0, left: 0, right: 0, bottom: 0,
+        // Gradiente un poco más fuerte para que el texto se lea bien en formato pequeño
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5) 100%)',
     },
-    textOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '100%',
-        padding: '40px 30px',
+    categoryTitle: {
+        position: 'absolute',   
+        top: '20px',
+        right: '20px',
+        margin: 0,
+        color: '#fff', 
+        // Texto más chico y proporcional
+        fontSize: '1.4rem', 
+        fontWeight: '700', 
+        textShadow: '0 2px 8px rgba(0,0,0,0.6)',
+        textAlign: 'right',
         zIndex: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    title: {
-        fontSize: '2.2rem',
-        fontWeight: '800',
-        color: 'white',
-        margin: '0 0 10px 0',
-        letterSpacing: '-0.5px',
-        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-    },
-    subtitle: {
-        fontSize: '1rem',
-        color: 'rgba(255,255,255,0.95)',
-        margin: '0 0 25px 0',
-        fontWeight: '500',
-    },
-    button: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        backgroundColor: 'white',
-        color: '#1e3a8a',
-        padding: '12px 28px',
-        borderRadius: '50px',
-        transition: 'all 0.3s ease',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-    },
-    buttonText: {
-        fontSize: '0.85rem',
-        fontWeight: '700',
-        letterSpacing: '1px',
-    },
-    arrow: {
-        fontSize: '1.2rem',
+        letterSpacing: '0.5px',
+        textTransform: 'uppercase'
     }
 };
 

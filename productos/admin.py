@@ -6,7 +6,7 @@ from .models import Categoria, Producto, VarianteColchon, Pedido, ItemPedido, Ba
 class ProductoImagenInline(admin.TabularInline):
     """Permite subir múltiples fotos en la misma pantalla del producto"""
     model = ProductoImagen
-    extra = 1 # Muestra 1 espacio vacío listo para subir
+    extra = 1 
     fields = ('imagen', 'orden', 'vista_previa')
     readonly_fields = ('vista_previa',)
 
@@ -20,21 +20,18 @@ class VarianteColchonInline(admin.TabularInline):
     """Permite crear las medidas (80x190, 140x190) y sus detalles aquí mismo"""
     model = VarianteColchon
     extra = 0
-    # Aquí agregamos 'descripcion_cubierta' y 'altura' para que se vean en la tabla
     fields = ('medida', 'altura', 'descripcion_cubierta', 'precio', 'stock', 'sku')
 
 # --- ADMINS PRINCIPALES ---
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    # Ya no usamos Summernote, volvemos al estándar
     list_display = ('nombre', 'precio', 'categoria', 'stock', 'disponible', 'imagen_preview')
     list_editable = ('precio', 'stock', 'disponible')
     search_fields = ('nombre',)
     list_filter = ('categoria', 'disponible')
     prepopulated_fields = {"slug": ("nombre",)}
     
-    # ESTO ES LO IMPORTANTE: Agrega los bloques de edición
     inlines = [ProductoImagenInline, VarianteColchonInline] 
     
     def imagen_preview(self, obj):
@@ -48,18 +45,32 @@ class CategoriaAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'slug')
     prepopulated_fields = {"slug": ("nombre",)}
 
+# --- CORRECCIÓN AQUÍ: ItemPedidoInline ---
 class ItemPedidoInline(admin.TabularInline):
     model = ItemPedido
     extra = 0
-    readonly_fields = ('producto_linea', 'medida_altura', 'cantidad', 'precio_unitario')
+    # Ajustado para ver el producto y precio, quitamos campos viejos
+    fields = ('producto', 'cantidad', 'precio_unitario')
+    readonly_fields = ('producto', 'cantidad', 'precio_unitario')
 
+# --- CORRECCIÓN AQUÍ: PedidoAdmin ---
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre_completo', 'email', 'total_neto', 'estado', 'fecha_creacion')
-    list_filter = ('estado', 'fecha_creacion')
-    search_fields = ('nombre_completo', 'email', 'id')
+    # Agregamos 'ciudad' y 'provincia' a las columnas visibles
+    list_display = ('id', 'get_nombre_completo', 'ciudad', 'telefono_contacto', 'total_neto', 'estado', 'fecha_creacion')
+    
+    # --- FILTROS POTENTES ---
+    # Esto creará una barra lateral donde podrás hacer clic en "Rafaela", "Santa Fe", etc.
+    list_filter = ('ciudad', 'provincia', 'estado', 'metodo_pago', 'fecha_creacion')
+    
+    search_fields = ('nombre_cliente', 'apellido_cliente', 'dni_cliente', 'ciudad')
+    
     inlines = [ItemPedidoInline]
-    readonly_fields = ('total_neto', 'merchant_order_id', 'payment_id')
+    readonly_fields = ('total_neto', 'fecha_creacion')
+
+    def get_nombre_completo(self, obj):
+        return f"{obj.nombre_cliente} {obj.apellido_cliente}"
+    get_nombre_completo.short_description = 'Cliente'
 
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
@@ -74,4 +85,4 @@ class BannerAdmin(admin.ModelAdmin):
 @admin.register(LineaProducto)
 class LineaProductoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'slug', 'orden', 'activa')
-    prepopulated_fields = {'slug': ('nombre',)} # Auto-rellena el slug al escribir el nombre
+    prepopulated_fields = {'slug': ('nombre',)}

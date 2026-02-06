@@ -9,18 +9,26 @@ const SearchBar = () => {
     const navigate = useNavigate();
     const searchRef = useRef(null); 
 
-    // Efecto para buscar con "Debounce"
+    // URL BASE (Ajustada a tu configuración de backend)
+    const API_URL = window.location.hostname === 'localhost' 
+        ? 'http://127.0.0.1:8000/api' 
+        : 'https://api-colchones.onrender.com/api'; 
+
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
-            if (query.length > 1) { 
+            if (query.trim().length > 1) { 
                 try {
-                    // Asegúrate de que este puerto sea el correcto (8000)
-                    const response = await fetch(`http://127.0.0.1:8000/api/productos/search/?q=${query}`);
-                    const data = await response.json();
-                    setSuggestions(data);
-                    setShowSuggestions(true);
+                    // Usamos la ruta correcta que descubrimos: /colchones/
+                    const response = await fetch(`${API_URL}/colchones/?search=${query}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const resultados = data.results ? data.results : data;
+                        setSuggestions(resultados);
+                        setShowSuggestions(true);
+                    }
                 } catch (error) {
-                    console.error("Error buscando:", error);
+                    console.error("Error silencioso en búsqueda:", error);
                 }
             } else {
                 setSuggestions([]);
@@ -31,7 +39,6 @@ const SearchBar = () => {
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
-    // Cerrar sugerencias si haces clic fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -42,46 +49,70 @@ const SearchBar = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // --- CORRECCIÓN CLAVE AQUÍ ---
     const handleSelectProduct = (product) => {
-        // Usamos el SLUG para navegar, ya que App.jsx espera /colchones/:slug
-        // Si por alguna razón no hay slug, usamos el ID como respaldo
-        const identifier = product.slug || product.id;
-        
-        navigate(`/colchones/${identifier}`); 
-        
+        navigate(`/colchones/${product.slug || product.id}`); 
         setShowSuggestions(false);
         setQuery(''); 
     };
 
     return (
         <div ref={searchRef} style={styles.searchContainer}>
+            {/* INPUT WRAPPER: Diseño moderno con borde suave */}
             <div style={styles.inputWrapper}>
                 <input
                     type="text"
-                    placeholder="Buscar colchón..."
+                    placeholder="Buscar colchón, sommier..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={() => query.length > 1 && setShowSuggestions(true)}
                     style={styles.input}
                 />
-                <span style={styles.icon}>🔍</span>
+                
+                {/* BOTÓN LUPA SVG (Sin emoji) */}
+                <button style={styles.searchButton} aria-label="Buscar">
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
             </div>
 
-            {/* Lista desplegable de resultados */}
+            {/* LISTA DE RESULTADOS FLOTANTE */}
             {showSuggestions && suggestions.length > 0 && (
                 <ul style={styles.resultsList}>
                     {suggestions.map((prod) => (
                         <li 
                             key={prod.id} 
-                            // --- CAMBIO AQUÍ: Pasamos el objeto 'prod' entero ---
                             onClick={() => handleSelectProduct(prod)}
                             style={styles.resultItem}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                         >
-                            <img src={prod.imagen} alt={prod.nombre} style={styles.miniImage} />
+                            {prod.imagen && (
+                                <div style={styles.imageContainer}>
+                                    <img src={prod.imagen} alt={prod.nombre} style={styles.miniImage} />
+                                </div>
+                            )}
                             <div style={styles.textInfo}>
                                 <span style={styles.prodName}>{prod.nombre}</span>
-                                <span style={styles.prodPrice}>${prod.precio}</span>
+                                <span style={styles.prodPrice}>
+                                    ${parseFloat(prod.precio).toLocaleString('es-AR')}
+                                </span>
+                            </div>
+                            
+                            {/* Flecha sutil a la derecha para indicar "Ir" */}
+                            <div style={{ marginLeft: 'auto', color: '#cbd5e1' }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </div>
                         </li>
                     ))}
@@ -91,60 +122,84 @@ const SearchBar = () => {
     );
 };
 
+// ESTILOS PREMIUM
 const styles = {
     searchContainer: {
         position: 'relative', 
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '600px', // Más ancho para que luzca
         margin: '0 auto' 
     },
     inputWrapper: {
         display: 'flex',
         alignItems: 'center',
         backgroundColor: 'white',
-        borderRadius: '25px',
-        padding: '5px 15px',
-        border: '1px solid #ccc'
+        borderRadius: '50px', // Borde completamente redondeado (estilo Google/Airbnb)
+        padding: '6px 6px 6px 20px', // Padding asimétrico para el botón
+        border: '1px solid #e2e8f0', // Borde gris muy suave
+        boxShadow: '0 2px 4px rgba(0,0,0,0.02)', // Sombra casi imperceptible
+        transition: 'all 0.3s ease'
     },
     input: {
         border: 'none',
         outline: 'none',
         width: '100%',
-        padding: '8px',
-        fontSize: '1rem'
+        padding: '8px 0',
+        fontSize: '0.95rem',
+        color: '#334155',
+        backgroundColor: 'transparent'
     },
-    icon: {
-        fontSize: '1.2rem',
-        cursor: 'pointer'
+    searchButton: {
+        backgroundColor: 'var(--decoud-gold)', // Fondo Dorado
+        color: 'white', // Lupa blanca
+        border: 'none',
+        borderRadius: '50%', // Botón circular
+        width: '36px',
+        height: '36px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'transform 0.2s, background-color 0.2s',
+        marginLeft: '10px'
     },
     resultsList: {
         position: 'absolute',
-        top: '100%', 
-        left: 0,
-        width: '100%',
+        top: '115%', 
+        left: '10px', // Un poco metido hacia adentro
+        right: '10px',
         backgroundColor: 'white',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        borderRadius: '8px',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)', // Sombra "Elevada"
+        borderRadius: '12px',
         listStyle: 'none',
-        padding: 0,
-        margin: '5px 0 0 0',
+        padding: '0',
+        margin: '0',
         zIndex: 1000, 
-        overflow: 'hidden'
+        overflow: 'hidden',
+        border: '1px solid #f1f5f9'
     },
     resultItem: {
         display: 'flex',
         alignItems: 'center',
-        padding: '10px 15px',
+        padding: '12px 15px',
         cursor: 'pointer',
-        borderBottom: '1px solid #eee',
-        transition: 'background 0.2s'
+        borderBottom: '1px solid #f8fafc',
+        transition: 'background-color 0.2s',
+        backgroundColor: 'white'
     },
-    miniImage: {
+    imageContainer: {
         width: '40px',
         height: '40px',
-        objectFit: 'cover',
-        borderRadius: '4px',
-        marginRight: '10px'
+        borderRadius: '6px',
+        overflow: 'hidden',
+        marginRight: '15px',
+        border: '1px solid #f1f5f9',
+        flexShrink: 0
+    },
+    miniImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover'
     },
     textInfo: {
         display: 'flex',
@@ -152,13 +207,16 @@ const styles = {
         alignItems: 'flex-start'
     },
     prodName: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: '0.9rem',
-        color: '#333'
+        color: '#1B365D', // Azul Decoud
+        marginBottom: '2px'
     },
     prodPrice: {
-        fontSize: '0.8rem',
-        color: '#228B22' 
+        fontSize: '0.85rem',
+        fontWeight: '700',
+        color: '#D4AF37', // Dorado Decoud
+        letterSpacing: '0.5px'
     }
 };
 

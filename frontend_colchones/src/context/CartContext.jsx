@@ -10,7 +10,7 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-    // 1. Carga inicial segura (evita errores con datos viejos)
+    // 1. Carga inicial
     const [cartItems, setCartItems] = useState(() => {
         try {
             const storedCart = localStorage.getItem('cart');
@@ -20,13 +20,17 @@ export const CartProvider = ({ children }) => {
             return [];
         }
     });
+    const [shippingData, setShippingData] = useState({
+        nombre: '', apellido: '', dni: '', telefono: '', 
+        direccion: '', ciudad: '', provincia: 'Santa Fe'
+    });
 
-    // 2. Guardar en LocalStorage cada vez que cambia el carrito
+    // 2. Guardar en LocalStorage
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // 3. Función AGREGAR (Blindada contra errores)
+    // 3. Función AGREGAR
     const addToCart = (product) => {
         if (!product || !product.id) {
             console.error("Intento de agregar producto inválido:", product);
@@ -34,7 +38,7 @@ export const CartProvider = ({ children }) => {
         }
 
         setCartItems(prevItems => {
-            // Buscamos si ya existe el ID
+            // Buscamos si ya existe el producto (por ID de variante)
             const existingItem = prevItems.find(item => item.id === product.id);
 
             if (existingItem) {
@@ -45,15 +49,22 @@ export const CartProvider = ({ children }) => {
                         : item
                 );
             } else {
-                // Si no existe, lo agregamos
-                return [...prevItems, product];
+                // Si no existe, lo agregamos. 
+                // Aseguramos que tenga uniqueId para el manejo en el frontend
+                const newItem = {
+                    ...product,
+                    uniqueId: product.uniqueId || `${product.id}-${Date.now()}`
+                };
+                return [...prevItems, newItem];
             }
         });
     };
 
-    // 4. Función REMOVER
+    // 4. Función REMOVER (Corregida para usar uniqueId si existe)
     const removeFromCart = (id) => {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+        setCartItems(prevItems => 
+            prevItems.filter(item => (item.uniqueId || item.id) !== id)
+        );
     };
 
     // 5. Función LIMPIAR TODO
@@ -61,11 +72,12 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
-    // 6. Función ACTUALIZAR CANTIDAD (+ / -)
+    // 6. Función ACTUALIZAR CANTIDAD
     const updateQuantity = (id, amount) => {
         setCartItems(prevItems => 
             prevItems.map(item => {
-                if (item.id === id) {
+                // Comparamos con uniqueId si es posible, sino id normal
+                if ((item.uniqueId || item.id) === id) {
                     const newQuantity = Math.max(1, item.cantidad + amount);
                     return { ...item, cantidad: newQuantity };
                 }
@@ -74,19 +86,27 @@ export const CartProvider = ({ children }) => {
         );
     };
 
-    // Cálculos automáticos
+    // --- CÁLCULOS (Aquí estaba el problema de nombre) ---
     const totalItems = cartItems.reduce((acc, item) => acc + (item.cantidad || 1), 0);
-    const totalPrice = cartItems.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
+    
+    // Cambiamos el nombre de la constante interna para ser claros, 
+    // pero lo importante es cómo lo exportamos abajo en el value.
+    const calculatedTotal = cartItems.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
 
     return (
         <CartContext.Provider value={{
             cartItems,
+            cart: cartItems,
             addToCart,
             removeFromCart,
             clearCart,
             updateQuantity,
             totalItems,
-            totalPrice
+            total: calculatedTotal,
+            
+            // EXPORTAMOS LA NUEVA DATA
+            shippingData, 
+            setShippingData 
         }}>
             {children}
         </CartContext.Provider>
