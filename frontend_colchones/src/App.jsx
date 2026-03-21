@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import SideCart from './components/SideCart';
 import WhatsAppButton from './components/WhatsAppButton';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -12,9 +13,8 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage'; 
 import OrderConfirmation from './pages/OrderConfirmation';
-
-// AJUSTE: Importamos 'Checkout' (no CheckoutPage) si así llamaste al archivo en el paso anterior
 import Checkout from './pages/CheckoutPage'; 
+import OrderConfirmationMP from './pages/OrderConfirmationMP';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -33,6 +33,7 @@ const App = () => {
         <>
             <ScrollToTop /> 
             <Header />
+            <SideCart />
             
             <main style={{ minHeight: 'calc(100vh - 160px)', width: '100%' }}>
                 <Routes>
@@ -42,14 +43,14 @@ const App = () => {
                     {/* PRODUCTOS */}
                     <Route path="/colchones" element={<ContentWrapper element={ProductList} />} />
                     <Route path="/colchones/:slug" element={<ProductDetail />} /> 
-                    {/* Nota: ProductDetail ya tiene su propio layout/padding, le quité el Wrapper */}
 
-                    {/* --- FLUJO DE COMPRA (Sin wrappers porque ya tienen diseño propio) --- */}
+                    {/* --- FLUJO DE COMPRA --- */}
                     <Route path="/carrito" element={<CartPage />} />
                     <Route path="/confirmar-pedido" element={<OrderConfirmation />} />
                     <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/confirmacion-pago" element={<OrderConfirmationMP />} />
 
-                    {/* USUARIO (Estos sí llevan Wrapper para quedar centrados) */}
+                    {/* USUARIO */}
                     <Route path="/login" element={<ContentWrapper element={LoginPage} />} />
                     <Route path="/register" element={<ContentWrapper element={RegisterPage} />} />
                     <Route path="/profile" element={<ContentWrapper element={ProfilePage} />} />

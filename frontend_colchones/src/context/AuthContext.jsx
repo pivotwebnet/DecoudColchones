@@ -1,108 +1,94 @@
-
 // src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/api'; // Importamos la instancia de Axios modificada
-import { jwtDecode } from 'jwt-decode'; // Necesitas instalar esta librería!
+import api from '../api/api';
+import { jwtDecode } from 'jwt-decode';
 
-// Instalar el decodificador de tokens: npm install jwt-decode
-// Nota: en React 19, podrías usar useMemo o useReducer para optimizar esto.
-
-// 1. Crear el Contexto
 const AuthContext = createContext();
 
-// Hook personalizado
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
-// 2. Crear el Proveedor (Provider) del Contexto
 export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(() => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            try {
+                return jwtDecode(token);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    });
     
-    // Inicializar el estado de la autenticación
-    const [authTokens, setAuthTokens] = useState(() => 
-        localStorage.getItem('accessToken') ? {
-            access: localStorage.getItem('accessToken'),
-            refresh: localStorage.getItem('refreshToken')
-        } : null
-    );
-    
-    const [user, setUser] = useState(() => 
-        localStorage.getItem('accessToken') ? jwtDecode(localStorage.getItem('accessToken')) : null
-    );
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-
-    // ------------------------------------------
-    // Funciones de Autenticación
-    // ------------------------------------------
+    // Sincronizar datos reales del usuario desde el backend al iniciar
+    useEffect(() => {
+        const fetchMe = async () => {
+            if (localStorage.getItem('accessToken')) {
+                try {
+                    const response = await api.get('me/');
+                    setUser(response.data);
+                } catch (error) {
+                    console.error("Error cargando perfil:", error);
+                    // Si falla por 401, el interceptor de api.js manejará el refresh o logout
+                }
+            }
+            setLoading(false);
+        };
+        fetchMe();
+    }, []);
 
     const loginUser = async (email, password) => {
-        setLoading(true);
         try {
-            // Llama al endpoint de tokens de Django (Login)
             const response = await api.post('token/', { 
-                username: email, // Django espera 'username', usamos el email
+                username: email, // Usamos email como username
                 password: password 
             });
 
-            const data = response.data;
+            const { access, refresh } = response.data;
             
-            // Almacenar tokens y decodificar el usuario
-            setAuthTokens(data);
-            setUser(jwtDecode(data.access));
+            localStorage.setItem('accessToken', access);
+            localStorage.setItem('refreshToken', refresh);
             
-            // Persistir tokens en el Local Storage
-            localStorage.setItem('accessToken', data.access);
-            localStorage.setItem('refreshToken', data.refresh);
-            setLoading(false);
+            // Obtenemos los datos completos del usuario inmediatamente
+            const meResponse = await api.get('me/');
+            setUser(meResponse.data);
             return true; 
             
         } catch (error) {
-            setLoading(false);
-            // Manejo de errores de login (ej: credenciales inválidas)
-            console.error("Error al iniciar sesión:", error.response?.data);
-            throw error.response?.data || { detail: "Error de red o servidor." };
+            console.error("Login failed:", error.response?.data);
+            throw error.response?.data || { detail: "Error de conexión." };
         }
     };
     
     const registerUser = async (formData) => {
-        setLoading(true);
         try {
-            // Llama al endpoint de registro de la app users
             const response = await api.post('register/', formData); 
-            setLoading(false);
-            // Después del registro exitoso, se podría llamar a loginUser(email, password)
+            // Podríamos loguearlo automáticamente aquí si quisiéramos
             return response.data; 
         } catch (error) {
-            setLoading(false);
-            console.error("Error al registrar:", error.response?.data);
-            throw error.response?.data || { detail: "Error de red o servidor." };
+            throw error.response?.data || { detail: "Error al registrar." };
         }
     };
 
     const logoutUser = () => {
-        setAuthTokens(null);
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        // Redirigir si es necesario
     };
     
-    // Contexto de la Aplicación
     const contextData = {
-        user: user,
-        authTokens: authTokens,
-        loginUser: loginUser,
-        logoutUser: logoutUser,
-        registerUser: registerUser,
-        loading: loading,
-        // Aquí iría la lógica de refresh token, si es necesaria
+        user,
+        loginUser,
+        logoutUser,
+        registerUser,
+        loading
     };
 
     return (
         <AuthContext.Provider value={contextData}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
 };

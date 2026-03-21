@@ -96,6 +96,7 @@ class ProductoImagen(models.Model):
 
 # --- 4. Pedido ---
 class Pedido(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos')
     nombre_cliente = models.CharField(max_length=100)
     apellido_cliente = models.CharField(max_length=100)
     dni_cliente = models.CharField(max_length=20)

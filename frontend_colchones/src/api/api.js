@@ -1,86 +1,89 @@
 // src/api/api.js
 import axios from 'axios';
 
-// 1. URL DINÁMICA
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 const api = axios.create({
   baseURL: API_URL, 
-  timeout: 5000,
+  timeout: 8000,
 });
 
-// Interceptor para Token
+// INTERCEPTOR DE PETICIÓN: Añade el token si existe
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('accessToken');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-}, error => {
-    return Promise.reject(error);
-});
+}, error => Promise.reject(error));
+
+// INTERCEPTOR DE RESPUESTA: Maneja la expiración del token (401)
+api.interceptors.response.use(
+    response => response,
+    async error => {
+        const originalRequest = error.config;
+
+        // Si el error es 401 y no hemos reintentado ya...
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            if (refreshToken) {
+                try {
+                    // Intentamos obtener un nuevo access token
+                    const response = await axios.post(`${API_URL}/token/refresh/`, {
+                        refresh: refreshToken
+                    });
+
+                    const { access } = response.data;
+                    localStorage.setItem('accessToken', access);
+
+                    // Reintentamos la petición original con el nuevo token
+                    originalRequest.headers.Authorization = `Bearer ${access}`;
+                    return api(originalRequest);
+                } catch (refreshError) {
+                    // Si el refresh token también expiró, cerramos sesión
+                    console.error("Sesión expirada totalmente.");
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                }
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default api;
 
-// --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
+// ENDPOINTS DE PRODUCTOS
 export const getProductos = async (params = {}) => {   
-  try {
-    // La URL base es /colchones/
     const response = await api.get('/colchones/', { params }); 
     return response.data;
-  } catch (error) {
-    console.error("Error al obtener productos:", error);
-    throw error;
-  }
 };
 
 export const getProductoBySlug = async (slug) => { 
-  try {
     const response = await api.get(`/colchones/${slug}/`);
     return response.data;
-  } catch (error) {
-    console.error(`Error al obtener producto con slug ${slug}:`, error);
-    throw error;
-  }
 };
 
-export const createPedido = async (pedidoData) => {
-    try {
-        const response = await api.post('/pedidos/', pedidoData);
-        console.log("Pedido guardado en BD:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Error creating order:", error.response?.data || error.message);
-        throw error;
-    }
-};
-
-export const getBanners = async () => {
-    try {
-        const response = await api.get('/banners/');
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener banners:", error);
-        return []; 
-    }
-};
-
+// ENDPOINTS DE USUARIOS
 export const getCategorias = async () => {
-    try {
-        const response = await api.get('/categorias/');
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener categorías:", error);
-        return []; 
-    }
+    const response = await api.get('/categorias/');
+    return response.data;
 };
 
 export const getLineas = async () => {
-    try {
-        const response = await api.get('/lineas/');
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener líneas:", error);
-        return [];
-    }
+    const response = await api.get('/lineas/');
+    return response.data;
+};
+
+export const createPedido = async (pedidoData) => {
+    const response = await api.post('/crear-pedido/', pedidoData);
+    return response.data;
+};
+
+export const getBanners = async () => {
+    const response = await api.get('/banners/');
+    return response.data;
 };

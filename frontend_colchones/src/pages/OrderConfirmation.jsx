@@ -44,8 +44,14 @@ const OrderConfirmation = () => {
             <input required name="telefono" type="tel" placeholder="Teléfono (WhatsApp Obligatorio)" value={shippingData.telefono} onChange={handleChange} className="form-input" />
             <input required name="direccion" placeholder="Dirección exacta (Calle y altura)" value={shippingData.direccion} onChange={handleChange} className="form-input" />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                <input required name="ciudad" placeholder="Ciudad" value={shippingData.ciudad} onChange={handleChange} className="form-input" />
-                <input required name="provincia" placeholder="Provincia" value={shippingData.provincia} onChange={handleChange} className="form-input" />
+                <input required name="ciudad" placeholder="Ciudad (Ej: Rafaela)" value={shippingData.ciudad} onChange={handleChange} className="form-input" />
+                <select required name="provincia" value={shippingData.provincia || 'Santa Fe'} onChange={handleChange} className="form-input" style={{ backgroundColor: 'white' }}>
+                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Córdoba">Córdoba</option>
+                    <option value="Entre Ríos">Entre Ríos</option>
+                    <option value="Buenos Aires">Buenos Aires</option>
+                    <option value="Otra">Otra provincia...</option>
+                </select>
             </div>
 
             {/* --- AVISO DE ENVÍO DESTACADO --- */}

@@ -13,7 +13,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'colchones', ProductoViewSet) 
 router.register(r'categorias', CategoriaViewSet)
-router.register(r'pedidos', PedidoViewSet)
+router.register(r'pedidos', PedidoViewSet, basename='pedidos')
 router.register(r'banners', BannerViewSet)
 router.register(r'lineas', LineaProductoViewSet, basename='lineas')
 

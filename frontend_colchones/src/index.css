@@ -5,33 +5,33 @@
   /* Dimensiones */
   --max-width-container: 1400px; 
   
-  /* PALETA DE MARCA DECOUD */
-  --decoud-blue: #1B365D;       /* Azul Berkeley (Headers, Textos fuertes) */
-  --decoud-blue-dark: #0F213A;  /* Azul Noche (Footer, Fondos oscuros) */
-  --decoud-gold: #D4AF37;       /* Dorado Metálico (Botones, Precios, Acentos) */
-  --decoud-gold-hover: #b3922a; /* Dorado más oscuro para hover */
-  --decoud-white: #f1f0e2;      /* Blanco Humo (Fondo general) */
+  /* PALETA DE MARCA DECOUD - ACTUALIZADA PARA CONFORT VISUAL */
+  --decoud-blue: #1B365D;       
+  --decoud-blue-dark: #0F213A;  
+  --decoud-gold: #D4AF37;       
+  --decoud-gold-hover: #b3922a; 
+  --decoud-white: #fbfbf9;      /* Blanco Hueso (Más suave que el blanco puro) */
   
-  /* Variables Funcionales (Mapeadas a la marca) */
+  /* Variables Funcionales */
   --color-primary: var(--decoud-blue);    
   --color-secondary: var(--decoud-gold);  
-  --color-text-dark: #333333;
-  --color-text-light: #f3f4f6;
+  --color-text-dark: #1e293b;   /* Slate 800 (Mucho más suave que el negro) */
+  --color-text-light: #f8fafc;
 }
 
 /* --- 2. Reset y Fondo Global --- */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif; /* Fuente moderna */
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   color: var(--color-text-dark);
-  
-  /* FONDO: Blanco suave para limpieza y amplitud */
   background-color: var(--decoud-white);
   min-height: 100vh;
-  
-  /* Crucial para carrusel ancho completo */
   overflow-x: hidden; 
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 #root {
