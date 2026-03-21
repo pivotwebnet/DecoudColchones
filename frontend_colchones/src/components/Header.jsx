@@ -80,11 +80,19 @@ const Header = () => {
             }}>
                 <div className="container-centered" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', alignItems: 'center', gap: '20px' }}>
                     
-                    {/* LOGO DECOUD BICOLOR */}
+                    {/* LOGO DECOUD IMAGEN */}
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                        <Link to="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: '1' }}>
-                            <span style={{ color: 'var(--decoud-white', fontSize: '1.8rem', fontWeight: '800', letterSpacing: '1px' }}>DECOUD</span>
-                            <span style={{ color: 'var(--decoud-gold)', fontSize: '0.8rem', fontWeight: '600', letterSpacing: '3px', marginLeft: '2px' }}>COLCHONES</span>
+                        <Link to="/">
+                            <img 
+                                src="/logotipo.png" 
+                                alt="Decoud Colchones" 
+                                style={{ 
+                                    height: isScrolled ? '40px' : '55px', 
+                                    width: 'auto', 
+                                    transition: 'height 0.3s ease-in-out',
+                                    display: 'block'
+                                }} 
+                            />
                         </Link>
                     </div>
 

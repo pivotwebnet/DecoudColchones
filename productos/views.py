@@ -6,19 +6,24 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Categoria, Producto, Pedido , Banner, LineaProducto
 from .serializers import CategoriaSerializer, ProductoSerializer, PedidoSerializer, PedidoCreateSerializer, BannerSerializer, LineaProductoSerializer
+from .filters import ProductoFilter
 
 # --- 1. Productos (ACCESO TOTAL - IGNORA TOKENS) ---
 class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.filter(disponible=True).select_related('categoria').prefetch_related('variantes')
+    queryset = Producto.objects.filter(disponible=True).select_related('categoria', 'linea')
     serializer_class = ProductoSerializer
     lookup_field = 'slug'
     authentication_classes = [] # <--- ESTO ES LA CLAVE: Ignora el token del frontend
     permission_classes = [AllowAny] 
     
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = ProductoFilter
     search_fields = ['nombre', 'descripcion_base']
+    ordering_fields = ['precio', 'creado_en', 'nombre']
+    ordering = ['-creado_en'] # Orden por defecto
 
 # --- 2. Categorías (ACCESO TOTAL - IGNORA TOKENS) ---
 class CategoriaViewSet(viewsets.ModelViewSet):
@@ -69,11 +74,9 @@ class BannerViewSet(viewsets.ModelViewSet):
     authentication_classes = [] # ¡Crucial! Ignora tokens
     permission_classes = [AllowAny] # ¡Crucial! Público
     
-class LineaProductoList(generics.ListAPIView):
-    """
-    Vista pública para listar las líneas de productos en el Home.
-    """
+class LineaProductoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = LineaProducto.objects.filter(activa=True).order_by('orden')
     serializer_class = LineaProductoSerializer
-    permission_classes = [AllowAny] # <--- CLAVE: Esto quita el candado
+    authentication_classes = []
+    permission_classes = [AllowAny]
     

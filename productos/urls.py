@@ -7,7 +7,7 @@ from .views import (
     PedidoCreateView,
     search_products,
     BannerViewSet,
-    LineaProductoList
+    LineaProductoViewSet
 )
 
 router = DefaultRouter()
@@ -15,10 +15,10 @@ router.register(r'colchones', ProductoViewSet)
 router.register(r'categorias', CategoriaViewSet)
 router.register(r'pedidos', PedidoViewSet)
 router.register(r'banners', BannerViewSet)
+router.register(r'lineas', LineaProductoViewSet, basename='lineas')
 
 urlpatterns = [
     path('', include(router.urls)),
     path('buscar/', search_products, name='search_products'),
     path('crear-pedido/', PedidoCreateView.as_view(), name='crear-pedido'),
-    path('lineas/', LineaProductoList.as_view(), name='lineas-list'),
 ]

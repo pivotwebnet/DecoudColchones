@@ -23,18 +23,10 @@ api.interceptors.request.use(config => {
 export default api;
 
 // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-export const getProductos = async (categoriaSlug = null) => {   
+export const getProductos = async (params = {}) => {   
   try {
-    // Definimos la URL base (asumiendo que tu endpoint en Django se llama 'colchones' o 'productos')
-    let url = '/colchones/'; 
-
-    // Si la función recibe una categoría (ej: "sommier"), la agregamos a la URL
-    if (categoriaSlug) {
-        // Esto genera algo como: /colchones/?categoria=sommier
-        url += `?categoria=${categoriaSlug}`;
-    }
-
-    const response = await api.get(url); 
+    // La URL base es /colchones/
+    const response = await api.get('/colchones/', { params }); 
     return response.data;
   } catch (error) {
     console.error("Error al obtener productos:", error);
@@ -73,8 +65,22 @@ export const getBanners = async () => {
     }
 };
 
+export const getCategorias = async () => {
+    try {
+        const response = await api.get('/categorias/');
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener categorías:", error);
+        return []; 
+    }
+};
+
 export const getLineas = async () => {
-    // Usamos la instancia 'api' para mantener la consistencia de la URL base
-    const response = await api.get('/lineas/'); 
-    return response.data;
+    try {
+        const response = await api.get('/lineas/');
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener líneas:", error);
+        return [];
+    }
 };
