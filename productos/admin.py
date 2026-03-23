@@ -21,7 +21,7 @@ class ProductoAdmin(SummernoteModelAdmin):
             'fields': ('nombre', 'slug', 'categoria', 'linea', 'imagen', 'descripcion_base')
         }),
         ('Detalles Técnicos', {
-            'fields': ('densidad', 'altura', 'tiene_top_pillow', 'peso_max_min', 'peso_max_max', 'garantia')
+            'fields': ('medida', 'densidad', 'altura', 'tiene_top_pillow', 'peso_max_min', 'peso_max_max', 'garantia')
         }),
         ('Comercial', {
             'fields': ('precio', 'precio_anterior', 'stock', 'cuotas', 'destacado', 'disponible')

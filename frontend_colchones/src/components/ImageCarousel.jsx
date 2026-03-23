@@ -14,63 +14,79 @@ const ImageCarousel = ({ interval = 5000 }) => {
     // 1. Cargar Banners del Backend
     useEffect(() => {
         const fetchBanners = async () => {
-            const data = await getBanners();
-            if (data && data.length > 0) {
-                setBanners(data);
+            try {
+                const data = await getBanners();
+                if (data && data.length > 0) {
+                    setBanners(data);
+                }
+            } catch (error) {
+                console.error("Error cargando banners:", error);
             }
         };
         fetchBanners();
     }, []);
 
-    // 2. Decidir qué mostrar (Backend o Default)
     const itemsToShow = banners.length > 0 ? banners : defaultImages;
 
-    // 3. Rotación automática
+    // 2. Rotación automática
     useEffect(() => {
-        if (itemsToShow.length <= 1) return; // No rotar si hay solo una imagen
-
+        if (itemsToShow.length <= 1) return;
         const timer = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % itemsToShow.length);
         }, interval);
         return () => clearInterval(timer);
     }, [interval, itemsToShow.length]);
 
-    const currentItem = itemsToShow[currentIndex];
+    if (itemsToShow.length === 0) return null;
 
-    // Protección por si acaso está cargando y no hay defaults
-    if (!currentItem) return <div style={{height: '600px', background: '#f0f0f0'}}></div>;
+    const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % itemsToShow.length);
+    const prevSlide = () => setCurrentIndex((prev) => (prev === 0 ? itemsToShow.length - 1 : prev - 1));
 
     return (
-        <div style={{ width: '100%', height: '600px', position: 'relative', overflow: 'hidden' }}>
-            
-            {/* Imagen de Fondo */}
-            <div style={{
-                width: '100%',
-                height: '100%',
-                // La API devuelve 'imagen', los default también los ajusté a 'imagen'
-                backgroundImage: `url(${currentItem.imagen})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                transition: 'background-image 0.5s ease-in-out',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                {/* Opcional: Mostrar título si quisieras */}
-                {/* <h2 style={{color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>{currentItem.titulo}</h2> */}
+        <div style={styles.carouselContainer}>
+            {/* Contenedor de Imágenes */}
+            <div style={styles.slidesWrapper}>
+                {itemsToShow.map((item, index) => (
+                    <div 
+                        key={index} 
+                        style={{
+                            ...styles.slide,
+                            opacity: index === currentIndex ? 1 : 0,
+                            zIndex: index === currentIndex ? 1 : 0,
+                        }}
+                    >
+                        <img 
+                            src={item.imagen} 
+                            alt={item.titulo || `Banner ${index + 1}`} 
+                            style={styles.image}
+                        />
+                    </div>
+                ))}
             </div>
 
-            {/* Puntos de navegación (Solo si hay más de 1 imagen) */}
+            {/* Flechas de Navegación */}
             {itemsToShow.length > 1 && (
-                <div style={{ position: 'absolute', bottom: '20px', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                <>
+                    <button onClick={prevSlide} style={{ ...styles.arrow, left: '20px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button onClick={nextSlide} style={{ ...styles.arrow, right: '20px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </>
+            )}
+
+            {/* Puntos de navegación */}
+            {itemsToShow.length > 1 && (
+                <div style={styles.dotsContainer}>
                     {itemsToShow.map((_, index) => (
                         <span 
                             key={index} 
                             onClick={() => setCurrentIndex(index)}
                             style={{
-                                width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
-                                backgroundColor: index === currentIndex ? 'white' : 'rgba(255,255,255,0.5)',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                                ...styles.dot,
+                                backgroundColor: index === currentIndex ? '#D4AF37' : 'rgba(255,255,255,0.5)',
+                                transform: index === currentIndex ? 'scale(1.3)' : 'scale(1)',
                             }}
                         />
                     ))}
@@ -78,6 +94,78 @@ const ImageCarousel = ({ interval = 5000 }) => {
             )}
         </div>
     );
+};
+
+const styles = {
+    carouselContainer: {
+        width: '100%',
+        aspectRatio: '16 / 8', // Proporción 2:1, igual que el banner de Otoño (3780x1890)
+        maxHeight: '750px',
+        position: 'relative',
+        backgroundColor: '#f8fafc',
+        overflow: 'hidden'
+    },
+    slidesWrapper: {
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+    },
+    slide: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        transition: 'opacity 0.8s ease-in-out',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // Llena todo el espacio disponible
+        objectPosition: 'center', // Mantiene el centro de la imagen siempre a la vista
+        backgroundColor: '#f8fafc' // Fondo claro neutro por si tarda en cargar
+    },
+    arrow: {
+        position: 'absolute',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        backdropFilter: 'blur(5px)',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        color: 'white',
+        width: '45px',
+        height: '45px',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        zIndex: 10,
+        transition: 'all 0.3s ease',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+        padding: 0
+    },
+    dotsContainer: {
+        position: 'absolute',
+        bottom: '20px',
+        left: '0',
+        right: '0',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '10px',
+        zIndex: 10
+    },
+    dot: {
+        width: '10px',
+        height: '10px',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+    }
 };
 
 export default ImageCarousel;

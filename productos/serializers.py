@@ -23,6 +23,7 @@ class ProductoSerializer(serializers.ModelSerializer):
     categoria = CategoriaSerializer(read_only=True)
     linea = LineaProductoSerializer(read_only=True)
     imagenes_extra = ProductoImagenSerializer(many=True, read_only=True)
+    medida_display = serializers.CharField(source='get_medida_display', read_only=True)
 
     class Meta:
         model = Producto
@@ -30,7 +31,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             'id', 'nombre', 'slug', 'descripcion_base', 
             'imagen', 'imagenes_extra',
             'precio', 'precio_anterior', 
-            'densidad', 'altura', 'tiene_top_pillow',
+            'densidad', 'altura', 'medida', 'medida_display', 'tiene_top_pillow',
             'peso_max_min', 'peso_max_max', 'garantia',
             'categoria', 'linea', 'stock',
             'disponible', 'cuotas'

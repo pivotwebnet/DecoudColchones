@@ -29,9 +29,16 @@ const ProductList = () => {
     // FILTROS
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedLine, setSelectedLine] = useState(null);
+    const [selectedMeasure, setSelectedMeasure] = useState(null);
     const [sortOrder, setSortOrder] = useState('-creado_en'); 
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
     const [minSupport, setMinSupport] = useState('');
+
+    const measures = [
+        { label: '1 Plaza', value: '1_plaza' },
+        { label: '1 1/2 Plaza', value: '1_y_media' },
+        { label: '2 Plazas', value: '2_plazas' }
+    ];
 
     useEffect(() => {
         const fetchFilters = async () => {
@@ -58,6 +65,7 @@ const ProductList = () => {
             const params = {};
             if (selectedCategory) params.categoria = selectedCategory;
             if (selectedLine) params.linea = selectedLine;
+            if (selectedMeasure) params.medida = selectedMeasure;
             if (priceRange.min) params.precio_min = priceRange.min;
             if (priceRange.max) params.precio_max = priceRange.max;
             if (minSupport) params.soporte_min = minSupport;
@@ -70,7 +78,7 @@ const ProductList = () => {
         } finally {
             setFetchingProducts(false);
         }
-    }, [selectedCategory, selectedLine, priceRange, sortOrder, minSupport]);
+    }, [selectedCategory, selectedLine, selectedMeasure, priceRange, sortOrder, minSupport]);
 
     useEffect(() => {
         fetchProductsFromServer();
@@ -120,6 +128,18 @@ const ProductList = () => {
                     </div>
 
                     <div className="filter-group">
+                        <h3>Medidas</h3>
+                        <ul>
+                            <li><button className={!selectedMeasure ? 'active' : ''} onClick={() => setSelectedMeasure(null)}>Todas las medidas</button></li>
+                            {measures.map(m => (
+                                <li key={m.value}>
+                                    <button className={selectedMeasure === m.value ? 'active' : ''} onClick={() => setSelectedMeasure(m.value)}>{m.label}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="filter-group">
                         <h3>Soporte Máximo</h3>
                         <select value={minSupport} onChange={(e) => setMinSupport(e.target.value)} className="filter-select">
                             <option value="">Cualquier peso</option>
@@ -139,7 +159,7 @@ const ProductList = () => {
                     </div>
 
                     <button className="reset-btn" onClick={() => { 
-                        setSelectedCategory(null); setSelectedLine(null); setPriceRange({ min: '', max: '' }); setMinSupport(''); setSortOrder('-creado_en'); 
+                        setSelectedCategory(null); setSelectedLine(null); setSelectedMeasure(null); setPriceRange({ min: '', max: '' }); setMinSupport(''); setSortOrder('-creado_en'); 
                     }}>Limpiar Filtros</button>
                 </aside>
 
@@ -147,7 +167,7 @@ const ProductList = () => {
                     
                     {/* ETIQUETAS DE FILTROS ACTIVOS */}
                     <div className="active-filters">
-                        {(selectedCategory || selectedLine || minSupport || priceRange.min || priceRange.max) && (
+                        {(selectedCategory || selectedLine || selectedMeasure || minSupport || priceRange.min || priceRange.max) && (
                             <span className="filter-label">Filtros activos:</span>
                         )}
                         
@@ -162,6 +182,13 @@ const ProductList = () => {
                             <div className="filter-tag">
                                 Línea: {lines.find(l => l.slug === selectedLine)?.nombre}
                                 <button onClick={() => setSelectedLine(null)}>×</button>
+                            </div>
+                        )}
+
+                        {selectedMeasure && (
+                            <div className="filter-tag">
+                                Medida: {measures.find(m => m.value === selectedMeasure)?.label}
+                                <button onClick={() => setSelectedMeasure(null)}>×</button>
                             </div>
                         )}
 

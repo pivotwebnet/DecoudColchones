@@ -64,6 +64,19 @@ class Producto(models.Model):
         ('5 años', '5 años'),
     ]
 
+    MEDIDA_CHOICES = [
+        ('1_plaza', '1 Plaza'),
+        ('1_y_media', '1 1/2 Plaza'),
+        ('2_plazas', '2 Plazas'),
+    ]
+
+    medida = models.CharField(
+        max_length=20, 
+        choices=MEDIDA_CHOICES, 
+        default='2_plazas', 
+        verbose_name="Medida/Plazas"
+    )
+
     peso_max_min = models.IntegerField(verbose_name="Peso Mínimo (kg)", default=0)
     peso_max_max = models.IntegerField(verbose_name="Peso Máximo (kg)", default=100)
     garantia = models.CharField(max_length=50, choices=GARANTIA_CHOICES, default='1 año') 

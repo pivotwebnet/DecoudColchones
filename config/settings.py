@@ -87,8 +87,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
+        conn_max_age=0  # Para SQLite local es mejor no persistir conexiones
     )
+}
+# Aumentar timeout para evitar 'database is locked' en SQLite
+DATABASES['default']['OPTIONS'] = {
+    'timeout': 30,
 }
 
 # Password validation
@@ -162,8 +166,14 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", 
     "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
     "https://decoud-colchones.vercel.app",
 ]
+
+# En desarrollo (DEBUG=True), permitimos todo para evitar estos problemas de puertos
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

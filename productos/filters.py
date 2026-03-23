@@ -5,6 +5,7 @@ class ProductoFilter(filters.FilterSet):
     linea = filters.CharFilter(field_name='linea__slug', lookup_expr='exact')
     categoria = filters.CharFilter(field_name='categoria__slug', lookup_expr='exact')
     altura = filters.NumberFilter(field_name='altura', lookup_expr='exact')
+    medida = filters.CharFilter(field_name='medida', lookup_expr='exact')
     
     # Filtros de precio
     precio_min = filters.NumberFilter(field_name='precio', lookup_expr='gte')
