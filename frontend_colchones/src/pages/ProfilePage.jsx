@@ -128,24 +128,24 @@ const ProfilePage = () => {
             </div>
 
             <style>{`
-                .profile-container { max-width: 1000px; margin: 40px auto; padding: 40px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
-                .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #f1f5f9; }
+                .profile-container { max-width: 1000px; margin: 40px auto; padding: 40px; background: var(--content-bg); color: var(--color-text-dark); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); transition: all 0.3s ease; }
+                .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--border-color); transition: border-bottom 0.3s ease; }
                 .user-info-brief { display: flex; align-items: center; gap: 20px; }
-                .avatar-circle { width: 60px; height: 60px; background: #1B365D; color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; }
-                .profile-header h1 { font-size: 1.8rem; margin: 0; color: #1B365D; }
-                .profile-header p { margin: 0; color: #64748b; }
+                .avatar-circle { width: 60px; height: 60px; background: var(--decoud-blue); color: var(--content-bg); display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; transition: all 0.3s ease; }
+                .profile-header h1 { font-size: 1.8rem; margin: 0; color: var(--decoud-blue); transition: color 0.3s ease; }
+                .profile-header p { margin: 0; color: var(--color-text-dark); opacity: 0.8; transition: color 0.3s ease; }
 
                 .btn-logout-pro { display: flex; align-items: center; gap: 8px; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
                 .btn-logout-pro:hover { background: #b91c1c; color: white; }
 
-                .profile-tabs { display: flex; gap: 30px; margin-bottom: 40px; border-bottom: 2px solid #f1f5f9; }
-                .profile-tabs button { background: none; border: none; padding: 15px 0; color: #94a3b8; font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; }
-                .profile-tabs button.active { color: #1B365D; }
-                .profile-tabs button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: #1B365D; }
+                .profile-tabs { display: flex; gap: 30px; margin-bottom: 40px; border-bottom: 2px solid var(--border-color); transition: border-bottom 0.3s ease; }
+                .profile-tabs button { background: none; border: none; padding: 15px 0; color: #94a3b8; font-weight: 700; font-size: 0.9rem; cursor: pointer; position: relative; transition: color 0.3s ease; }
+                .profile-tabs button.active { color: var(--decoud-blue); }
+                .profile-tabs button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: var(--decoud-blue); transition: background 0.3s ease; }
 
-                .order-card-pro { padding: 20px; background: #f8fafc; border-radius: 12px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
+                .order-card-pro { padding: 20px; background: var(--bg-color); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); transition: all 0.3s ease; }
                 .order-main-info { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; }
-                .order-number { font-weight: 800; color: #1B365D; }
+                .order-number { font-weight: 800; color: var(--decoud-blue); transition: color 0.3s ease; }
                 .order-status { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
                 .order-status.pendiente { background: #fef3c7; color: #92400e; }
                 .order-status.entregado { background: #d1fae5; color: #065f46; }
@@ -153,9 +153,10 @@ const ProfilePage = () => {
                 .profile-form { max-width: 500px; }
                 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
                 .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
-                .form-group label { font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-                .form-group input { padding: 12px; border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: 1rem; outline: none; }
-                .btn-save-pro { background: #1B365D; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+                .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--color-text-dark); text-transform: uppercase; transition: color 0.3s ease; }
+                .form-group input { padding: 12px; border-radius: 8px; border: 1.5px solid var(--border-color); background: var(--content-bg); color: var(--color-text-dark); font-size: 1rem; outline: none; transition: all 0.3s ease; }
+                .btn-save-pro { background: var(--decoud-blue); color: var(--content-bg); border: none; padding: 15px 30px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.3s ease; }
+                .btn-save-pro:hover { opacity: 0.9; }
 
                 .alert-box { padding: 15px; border-radius: 8px; margin-bottom: 30px; font-size: 0.9rem; font-weight: 600; }
                 .alert-box.success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }

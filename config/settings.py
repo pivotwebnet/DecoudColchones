@@ -237,6 +237,13 @@ JAZZMIN_UI_TWEAKS = {
 X_FRAME_OPTIONS = 'SAMEORIGIN' 
 SUMMERNOTE_THEME = 'bs4'
 
-# --- MERCADO PAGO ---
-MERCADOPAGO_ACCESS_TOKEN = os.environ.get('MERCADOPAGO_ACCESS_TOKEN', 'TEST-ACCESS-TOKEN')
+# --- MOBBEX ---
+# Credenciales de PRUEBA por defecto. Reemplazar con las reales en producción (.env)
+MOBBEX_API_KEY     = os.environ.get('MOBBEX_API_KEY',     'zJ8LFTBX6Ba8D611e9io13fDZAwj0QmKO1Hn1yIj')
+MOBBEX_ACCESS_TOKEN = os.environ.get('MOBBEX_ACCESS_TOKEN', 'd31f0721-2f85-44e7-bcc6-15e19d1a53cc')
+# True  → ambiente sandbox (test). False → producción real.
+MOBBEX_TEST        = os.environ.get('MOBBEX_TEST', 'true').lower() == 'true'
+
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+# En producción debe ser la URL pública del servidor Django (para el webhook de Mobbex)
+BACKEND_URL  = os.environ.get('BACKEND_URL',  'http://localhost:8000')

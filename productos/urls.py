@@ -1,13 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    ProductoViewSet, 
-    CategoriaViewSet, 
-    PedidoViewSet, 
+    ProductoViewSet,
+    CategoriaViewSet,
+    PedidoViewSet,
     PedidoCreateView,
+    MobbexWebhookView,
     search_products,
     BannerViewSet,
-    LineaProductoViewSet
+    LineaProductoViewSet,
 )
 
 router = DefaultRouter()
@@ -21,4 +22,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('buscar/', search_products, name='search_products'),
     path('crear-pedido/', PedidoCreateView.as_view(), name='crear-pedido'),
+    path('mobbex/webhook/', MobbexWebhookView.as_view(), name='mobbex-webhook'),
 ]

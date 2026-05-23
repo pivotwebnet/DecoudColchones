@@ -24,28 +24,28 @@ const OrderConfirmation = () => {
   if (cartItems.length === 0) return <div className="container-centered" style={{padding:'50px'}}>Carrito vacío</div>;
 
   return (
-    <div className="container-centered" style={{ padding: '20px 20px 60px' }}>
+    <div className="container-centered" style={{ padding: '20px 20px 60px', transition: 'all 0.3s ease' }}>
       
       <CheckoutSteps />
 
-      <h2 style={{ color: '#1B365D', borderBottom: '2px solid #D4AF37', display: 'inline-block', marginBottom: '30px' }}>
+      <h2 style={{ color: 'var(--decoud-blue)', borderBottom: '2px solid var(--decoud-gold)', display: 'inline-block', marginBottom: '30px', transition: 'color 0.3s ease' }}>
         Datos de Envío
       </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: 'clamp(20px, 4vw, 40px)' }}>
         
         {/* COLUMNA 1: FORMULARIO */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', gap: '15px' }}>
                 <input required name="nombre" placeholder="Nombre" value={shippingData.nombre} onChange={handleChange} className="form-input" />
                 <input required name="apellido" placeholder="Apellido" value={shippingData.apellido} onChange={handleChange} className="form-input" />
             </div>
             <input required name="dni" placeholder="DNI / CUIL" value={shippingData.dni} onChange={handleChange} className="form-input" />
             <input required name="telefono" type="tel" placeholder="Teléfono (WhatsApp Obligatorio)" value={shippingData.telefono} onChange={handleChange} className="form-input" />
             <input required name="direccion" placeholder="Dirección exacta (Calle y altura)" value={shippingData.direccion} onChange={handleChange} className="form-input" />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', gap: '15px' }}>
                 <input required name="ciudad" placeholder="Ciudad (Ej: Rafaela)" value={shippingData.ciudad} onChange={handleChange} className="form-input" />
-                <select required name="provincia" value={shippingData.provincia || 'Santa Fe'} onChange={handleChange} className="form-input" style={{ backgroundColor: 'white' }}>
+                <select required name="provincia" value={shippingData.provincia || 'Santa Fe'} onChange={handleChange} className="form-input" style={{ backgroundColor: 'var(--content-bg)', color: 'var(--color-text-dark)' }}>
                     <option value="Santa Fe">Santa Fe</option>
                     <option value="Córdoba">Córdoba</option>
                     <option value="Entre Ríos">Entre Ríos</option>
@@ -58,8 +58,8 @@ const OrderConfirmation = () => {
             <div className="shipping-notice">
                 <div className="icon-box">🚚</div>
                 <div>
-                    <h4 style={{ margin: '0 0 5px 0', color: '#1e293b' }}>Información sobre el Envío</h4>
-                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: '1.4' }}>
+                    <h4 style={{ margin: '0 0 5px 0', color: 'var(--color-text-dark)', transition: 'color 0.3s ease' }}>Información sobre el Envío</h4>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-dark)', opacity: 0.8, lineHeight: '1.4', transition: 'color 0.3s ease' }}>
                         El costo de envío <strong>se coordina después de la compra</strong>. <br/>
                         Al finalizar el pago, nos contactaremos a tu WhatsApp para gestionar el transporte más conveniente y seguro para tu zona.
                     </p>
@@ -67,7 +67,7 @@ const OrderConfirmation = () => {
             </div>
 
             {/* BOTONERA CON ANIMACIONES */}
-            <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
                 <Link to="/carrito" className="btn-secondary animated-btn">
                     ← Volver al Carrito
                 </Link>
@@ -79,15 +79,15 @@ const OrderConfirmation = () => {
 
         {/* COLUMNA 2: RESUMEN (Sticky para que siga al usuario) */}
         <div style={{ height: 'fit-content', position: 'sticky', top: '20px' }}>
-            <div style={{ backgroundColor: '#f8fafc', padding: '25px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ marginTop: 0, color: '#1B365D' }}>Tu Pedido</h3>
-                <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#D4AF37', margin: '10px 0' }}>
+            <div style={{ backgroundColor: 'var(--bg-color)', padding: '25px', borderRadius: '8px', border: '1px solid var(--border-color)', transition: 'all 0.3s ease' }}>
+                <h3 style={{ marginTop: 0, color: 'var(--decoud-blue)', transition: 'color 0.3s ease' }}>Tu Pedido</h3>
+                <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--decoud-gold)', margin: '10px 0', transition: 'color 0.3s ease' }}>
                     ${(total || 0).toLocaleString('es-AR')}
                 </p>
-                <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '15px' }}>
+                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-dark)', opacity: 0.7, marginBottom: '15px', transition: 'color 0.3s ease' }}>
                     {cartItems.length} productos seleccionados
                 </p>
-                <ul style={{ paddingLeft: '20px', color: '#666', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto' }}>
+                <ul style={{ paddingLeft: '20px', color: 'var(--color-text-dark)', opacity: 0.8, fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', transition: 'color 0.3s ease' }}>
                     {cartItems.map(item => (
                         <li key={item.uniqueId} style={{ marginBottom: '8px' }}>
                             <strong>{item.nombre}</strong> <br/>
@@ -104,22 +104,24 @@ const OrderConfirmation = () => {
         .form-input {
             padding: 12px;
             border-radius: 6px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
+            background-color: var(--content-bg);
+            color: var(--color-text-dark);
             font-size: 1rem;
             width: 100%;
             box-sizing: border-box;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
             outline: none;
         }
         .form-input:focus {
-            border-color: #1B365D;
+            border-color: var(--decoud-blue);
             box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.1);
         }
 
         /* Caja de Aviso de Envío */
         .shipping-notice {
-            background-color: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background-color: rgba(14, 165, 233, 0.1);
+            border: 1px solid var(--decoud-blue);
             border-left: 5px solid #0ea5e9; /* Azul informativo */
             padding: 15px;
             border-radius: 8px;
@@ -127,10 +129,11 @@ const OrderConfirmation = () => {
             display: flex;
             gap: 15px;
             align-items: start;
+            transition: all 0.3s ease;
         }
         .icon-box {
             font-size: 1.5rem;
-            background: white;
+            background: var(--content-bg);
             width: 40px;
             height: 40px;
             display: flex;
@@ -138,13 +141,14 @@ const OrderConfirmation = () => {
             justify-content: center;
             border-radius: 50%;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
 
         /* Botones Base */
         .btn-primary {
             flex: 1;
-            background-color: #1B365D;
-            color: white;
+            background-color: var(--decoud-blue);
+            color: var(--content-bg);
             padding: 15px;
             border-radius: 6px;
             border: none;
@@ -155,11 +159,11 @@ const OrderConfirmation = () => {
         }
         .btn-secondary {
             flex: 1;
-            background-color: white;
-            color: #64748b;
+            background-color: var(--content-bg);
+            color: var(--color-text-dark);
             padding: 15px;
             border-radius: 6px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             font-size: 1rem;
             cursor: pointer;
             text-align: center;
@@ -172,7 +176,7 @@ const OrderConfirmation = () => {
 
         /* Animaciones de Botones */
         .animated-btn {
-            transition: transform 0.1s ease, box-shadow 0.2s ease, background-color 0.2s;
+            transition: transform 0.1s ease, box-shadow 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
         }
         .animated-btn:hover {
             transform: translateY(-2px); /* Se levanta un poquito */
@@ -185,12 +189,11 @@ const OrderConfirmation = () => {
         
         /* Hover específico por color */
         .btn-primary:hover {    
-            background-color: #244475; /* Un azul un poco más claro */
+            opacity: 0.9;
         }
         .btn-secondary:hover {
-            border-color: #94a3b8;
-            color: #334155;
-            background-color: #f8fafc;
+            border-color: var(--decoud-blue);
+            background-color: var(--bg-color);
         }
       `}</style>
     </div>

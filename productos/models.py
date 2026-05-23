@@ -51,8 +51,8 @@ class Producto(models.Model):
     precio_anterior = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
     descripcion_base = models.TextField(verbose_name="Descripción")
-    densidad = models.CharField(max_length=50, verbose_name="Densidad") 
-    altura = models.IntegerField(verbose_name="Altura (cm)", null=True, blank=True)
+    densidad = models.IntegerField(verbose_name="Densidad (kg/m³)", help_text="Solo el número (ej: 30)", null=True, blank=True) 
+    altura = models.IntegerField(verbose_name="Altura (cm)", help_text="Solo el número (ej: 25)", null=True, blank=True)
     tiene_top_pillow = models.BooleanField(default=False, verbose_name="¿Tiene Top Pillow?")
     
     GARANTIA_CHOICES = [

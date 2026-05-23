@@ -24,7 +24,7 @@ const SideCart = () => {
             <div className={`side-cart ${isCartOpen ? 'open' : ''}`}>
                 <div className="cart-header">
                     <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                         <h2 style={{margin:0, fontSize:'1.2rem', color:'#1B365D'}}>Tu Carrito</h2>
                     </div>
                     <button className="close-btn" onClick={() => setIsCartOpen(false)}>
@@ -53,7 +53,9 @@ const SideCart = () => {
                         ))
                     ) : (
                         <div className="empty-cart-msg">
-                            <div style={{fontSize:'3rem', marginBottom:'15px'}}>🛒</div>
+                            <div style={{marginBottom:'15px', display:'flex', justifyContent:'center'}}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                            </div>
                             <p>Tu carrito está vacío</p>
                             <button onClick={() => setIsCartOpen(false)} className="btn-secondary">Volver a la tienda</button>
                         </div>
@@ -78,7 +80,7 @@ const SideCart = () => {
                 .cart-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 2999; opacity: 0; visibility: hidden; transition: all 0.3s; backdrop-filter: blur(2px); }
                 .cart-overlay.open { opacity: 1; visibility: visible; }
 
-                .side-cart { position: fixed; top: 0; right: 0; width: 400px; height: 100vh; background: white; z-index: 3000; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
+                .side-cart { position: fixed; top: 0; right: 0; width: min(400px, 100vw); height: 100vh; background: white; z-index: 3000; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
                 .side-cart.open { transform: translateX(0); }
 
                 .cart-header { padding: 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }

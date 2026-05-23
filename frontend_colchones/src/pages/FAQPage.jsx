@@ -92,7 +92,7 @@ const FAQPage = () => {
     ];
 
     return (
-        <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', padding: '60px 0' }}>
+        <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100vh', padding: 'clamp(30px, 5vw, 60px) 0', transition: 'background-color 0.3s ease' }}>
             <div className="container-centered" style={{ maxWidth: '800px' }}>
                 
                 <h1 style={styles.pageTitle}>Preguntas Frecuentes</h1>
@@ -105,7 +105,7 @@ const FAQPage = () => {
                     {faqSections.map((section, index) => {
                         const isOpen = activeIndex === index;
                         return (
-                            <div className="accordion-item" key={index} style={{ marginBottom: '10px', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                            <div className="accordion-item" key={index} style={{ marginBottom: '10px', border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden', transition: 'border-color 0.3s ease' }}>
                                 <h2 className="accordion-header">
                                     <button 
                                         className={`accordion-button ${isOpen ? '' : 'collapsed'}`} 
@@ -128,10 +128,10 @@ const FAQPage = () => {
                                             strokeLinecap="round" 
                                             strokeLinejoin="round"
                                             style={{
-                                                transition: 'transform 0.3s ease', // Animación de rotación
+                                                transition: 'transform 0.3s ease, color 0.3s ease', // Animación de rotación
                                                 transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', // Rota si está abierto
                                                 marginLeft: '15px',
-                                                color: '#1e3a8a'
+                                                color: 'var(--decoud-blue)'
                                             }}
                                         >
                                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -145,8 +145,9 @@ const FAQPage = () => {
                                     style={{
                                         maxHeight: isOpen ? '1500px' : '0px', 
                                         overflow: 'hidden',
-                                        transition: 'max-height 0.4s ease-in-out, opacity 0.4s ease-in-out',
-                                        opacity: isOpen ? 1 : 0
+                                        transition: 'max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, background-color 0.3s ease',
+                                        opacity: isOpen ? 1 : 0,
+                                        backgroundColor: 'var(--content-bg)'
                                     }}
                                 >
                                     <div className="accordion-body" style={{ padding: '20px 25px' }}>
@@ -164,31 +165,32 @@ const FAQPage = () => {
 };
 
 const styles = {
-    pageTitle: { fontSize: '2.5rem', color: '#1e3a8a', marginBottom: '10px', fontWeight: 'bold', textAlign: 'center' },
-    intro: { textAlign: 'center', color: '#64748b', marginBottom: '40px', fontSize: '1.1rem' },
+    pageTitle: { fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', color: 'var(--decoud-blue)', marginBottom: '10px', fontWeight: 'bold', textAlign: 'center', transition: 'color 0.3s ease' },
+    intro: { textAlign: 'center', color: 'var(--color-text-dark)', marginBottom: '40px', fontSize: '1.1rem', transition: 'color 0.3s ease' },
     
     // ESTILO IMPORTANTE DEL BOTÓN
-    accordionBtn: { 
-        fontSize: '1.1rem', 
-        fontWeight: 'bold', 
-        color: '#1e3a8a', 
-        backgroundColor: '#f8fafc', 
+    accordionBtn: {
+        fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+        fontWeight: 'bold',
+        color: 'var(--decoud-blue)',
+        backgroundColor: 'var(--border-color)',
         boxShadow: 'none',
-        display: 'flex',            // Para alinear título y flecha
-        justifyContent: 'space-between', 
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        padding: '15px 20px',
+        padding: 'clamp(12px, 2vw, 15px) clamp(12px, 2vw, 20px)',
         border: 'none',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        transition: 'all 0.3s ease'
     },
     
-    subItem: { marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px dashed #eee' },
-    questionTitle: { fontSize: '1.1rem', color: '#333', fontWeight: '700', marginBottom: '8px' },
-    answer: { fontSize: '0.95rem', color: '#555', lineHeight: '1.6', margin: 0 },
-    highlightItem: { backgroundColor: '#f0fdf4', padding: '20px', borderRadius: '8px', border: '1px solid #bbf7d0', marginBottom: '25px' },
-    list: { fontSize: '0.95rem', color: '#555', lineHeight: '1.8', paddingLeft: '20px', marginBottom: '10px' },
-    bankBox: { backgroundColor: '#f1f5f9', padding: '15px', borderRadius: '6px', borderLeft: '4px solid #1e3a8a', fontFamily: 'monospace', fontSize: '0.9rem', color: '#334155', marginTop: '10px' }
+    subItem: { marginBottom: '25px', paddingBottom: '15px', borderBottom: '1px dashed var(--border-color)', transition: 'border-color 0.3s ease' },
+    questionTitle: { fontSize: '1.1rem', color: 'var(--color-text-dark)', fontWeight: '700', marginBottom: '8px', transition: 'color 0.3s ease' },
+    answer: { fontSize: '0.95rem', color: 'var(--color-text-dark)', lineHeight: '1.6', margin: 0, transition: 'color 0.3s ease' },
+    highlightItem: { backgroundColor: 'rgba(240, 253, 244, 0.1)', padding: '20px', borderRadius: '8px', border: '1px solid #bbf7d0', marginBottom: '25px', transition: 'background-color 0.3s ease' },
+    list: { fontSize: '0.95rem', color: 'var(--color-text-dark)', lineHeight: '1.8', paddingLeft: '20px', marginBottom: '10px', transition: 'color 0.3s ease' },
+    bankBox: { backgroundColor: 'var(--border-color)', padding: '15px', borderRadius: '6px', borderLeft: '4px solid var(--decoud-blue)', fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--color-text-dark)', marginTop: '10px', transition: 'all 0.3s ease' }
 };
 
 export default FAQPage;

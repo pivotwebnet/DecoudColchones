@@ -7,19 +7,19 @@ const categories = [
         id: 1,
         title: "Colchones",
         image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_13c9vi13c9vi13c9_xyxwrd.png", 
-        link: "/colchones?categoria=espuma"
+        link: "/colchones?categoria=colchones"
     },
     {
         id: 2,
-        title: "En Caja",
-        image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_u6pbwhu6pbwhu6pb_tyog8t.png",
-        link: "/colchones?categoria=caja"
-    },
-    {
-        id: 3,
         title: "Sommiers",
         image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127180/Gemini_Generated_Image_6u1sm16u1sm16u1s_kqo6df.png",
         link: "/colchones?categoria=sommiers"
+    },
+    {
+        id: 3,
+        title: "Espuma",
+        image: "https://res.cloudinary.com/djv3eauty/image/upload/f_auto,q_auto/v1770127181/Gemini_Generated_Image_u6pbwhu6pbwhu6pb_tyog8t.png",
+        link: "/colchones?categoria=espuma"
     }
 ];
 
@@ -49,17 +49,14 @@ const CategoryCards = () => {
                     {categories.map((cat) => (
                         <Link to={cat.link} key={cat.id} style={styles.card} className="category-card">
                             <div style={styles.imageWrapper} className="img-wrapper">
-                                <img 
-                                    src={cat.image} 
-                                    alt={cat.title} 
-                                    style={styles.image} 
+                                <img
+                                    src={cat.image}
+                                    alt={cat.title}
+                                    style={styles.image}
                                 />
-                                <div style={styles.overlay}></div>
+                                <div style={styles.overlay} />
                             </div>
-                            
-                            <h3 style={styles.categoryTitle}>
-                                {cat.title}
-                            </h3>
+                            <h3 style={styles.categoryTitle}>{cat.title}</h3>
                         </Link>
                     ))}
                 </div>
@@ -78,24 +75,24 @@ const CategoryCards = () => {
                     position: absolute;
                     top: 50%;
                     transform: translateY(-50%);
-                    background: white;
+                    background: var(--header-bg);
                     border: none;
                     width: 35px; height: 35px; /* Más chicas */
                     border-radius: 50%;
                     font-size: 1.5rem;
-                    color: #1B365D;
+                    color: var(--decoud-blue);
                     cursor: pointer;
                     z-index: 10;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
                     display: flex; align-items: center; justify-content: center;
                     padding-bottom: 4px;
                     opacity: 0; 
-                    transition: opacity 0.3s;
+                    transition: opacity 0.3s, background-color 0.3s, color 0.3s;
                     pointer-events: none;
                 }
                 
                 .carouselContainer:hover .nav-btn { opacity: 0.9; pointer-events: auto; }
-                .nav-btn:hover { background: #1B365D; color: white; }
+                .nav-btn:hover { background: var(--decoud-blue); color: white; }
                 .nav-btn.left { left: 10px; }
                 .nav-btn.right { right: 10px; }
 
@@ -117,13 +114,14 @@ const styles = {
         position: 'relative'
     },
     mainTitle: {
-        color: '#1B365D',
+        color: 'var(--decoud-blue)',
         textAlign: 'center',
-        fontSize: '1.5rem', // Título más chico (era 2rem)
-        marginBottom: '20px', // Menos espacio
+        fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
+        marginBottom: '20px',
         fontWeight: 'bold',
         textTransform: 'uppercase',
-        letterSpacing: '1px'
+        letterSpacing: '1px',
+        transition: 'color 0.3s ease'
     },
     carouselContainer: {
         position: 'relative',
@@ -133,23 +131,23 @@ const styles = {
     track: {
         display: 'flex',
         width: '100%',
-        // CAMBIO CLAVE: Altura reducida para no competir con el Hero
-        height: '280px', 
+        height: 'clamp(160px, 30vw, 280px)',
         overflowX: 'auto',
         scrollSnapType: 'x mandatory',
         scrollbarWidth: 'none',
         scrollBehavior: 'smooth',
-        gap: '2px', 
+        gap: '2px',
     },
     card: {
-        flex: '1', 
-        minWidth: '260px', // Un poco más angostas en móvil
+        flex: '1',
+        minWidth: 'clamp(160px, 40vw, 260px)',
         height: '100%',
         position: 'relative',
         textDecoration: 'none',
         scrollSnapAlign: 'start',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: 'var(--bg-color)',
         overflow: 'hidden',
+        transition: 'background-color 0.3s ease',
     },
     imageWrapper: {
         width: '100%',

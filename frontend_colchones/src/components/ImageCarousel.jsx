@@ -43,7 +43,7 @@ const ImageCarousel = ({ interval = 5000 }) => {
     const prevSlide = () => setCurrentIndex((prev) => (prev === 0 ? itemsToShow.length - 1 : prev - 1));
 
     return (
-        <div style={styles.carouselContainer}>
+        <div style={styles.carouselContainer} className="carousel-wrap">
             {/* Contenedor de Imágenes */}
             <div style={styles.slidesWrapper}>
                 {itemsToShow.map((item, index) => (
@@ -67,10 +67,10 @@ const ImageCarousel = ({ interval = 5000 }) => {
             {/* Flechas de Navegación */}
             {itemsToShow.length > 1 && (
                 <>
-                    <button onClick={prevSlide} style={{ ...styles.arrow, left: '20px' }}>
+                    <button onClick={prevSlide} style={{ ...styles.arrow, left: '20px' }} className="carousel-arrow">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
-                    <button onClick={nextSlide} style={{ ...styles.arrow, right: '20px' }}>
+                    <button onClick={nextSlide} style={{ ...styles.arrow, right: '20px' }} className="carousel-arrow">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 </>
@@ -98,12 +98,16 @@ const ImageCarousel = ({ interval = 5000 }) => {
 
 const styles = {
     carouselContainer: {
-        width: '100%',
-        aspectRatio: '16 / 8', // Proporción 2:1, igual que el banner de Otoño (3780x1890)
-        maxHeight: '750px',
+        width: '94%',
+        maxWidth: '1300px',
+        margin: '20px auto',
+        aspectRatio: '16 / 6',
+        maxHeight: '500px',
         position: 'relative',
         backgroundColor: '#f8fafc',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderRadius: '20px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
     },
     slidesWrapper: {
         width: '100%',
@@ -167,5 +171,20 @@ const styles = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
     }
 };
+
+const carouselResponsive = `
+  @media (max-width: 768px) {
+    .carousel-wrap { aspect-ratio: 16 / 9 !important; max-height: 260px !important; width: 100% !important; border-radius: 0 !important; margin: 0 !important; }
+    .carousel-arrow { width: 36px !important; height: 36px !important; }
+    .carousel-arrow svg { width: 18px !important; height: 18px !important; }
+  }
+  @media (max-width: 480px) {
+    .carousel-wrap { aspect-ratio: 4 / 3 !important; max-height: 220px !important; }
+  }
+`;
+
+const styleEl = document.createElement('style');
+styleEl.innerText = carouselResponsive;
+document.head.appendChild(styleEl);
 
 export default ImageCarousel;

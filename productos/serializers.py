@@ -28,13 +28,13 @@ class ProductoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Producto
         fields = [
-            'id', 'nombre', 'slug', 'descripcion_base', 
+            'id', 'nombre', 'slug', 'descripcion_base',
             'imagen', 'imagenes_extra',
-            'precio', 'precio_anterior', 
+            'precio', 'precio_anterior',
             'densidad', 'altura', 'medida', 'medida_display', 'tiene_top_pillow',
             'peso_max_min', 'peso_max_max', 'garantia',
             'categoria', 'linea', 'stock',
-            'disponible', 'cuotas'
+            'disponible', 'cuotas', 'destacado'
         ]
 
 class BannerSerializer(serializers.ModelSerializer):
@@ -103,3 +103,7 @@ class PedidoCreateSerializer(serializers.ModelSerializer):
                 precio_unitario=producto.precio 
             )
         return pedido
+     
+
+
+    

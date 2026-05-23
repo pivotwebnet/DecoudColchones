@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import SideCart from './components/SideCart';
 import WhatsAppButton from './components/WhatsAppButton';
 import ScrollToTop from './components/ScrollToTop';
+import CloudBackground from './components/CloudBackground';
 
 // --- IMPORTACIÓN DE PÁGINAS ---
 import HomePage from './pages/HomePage';
@@ -20,6 +21,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import FAQPage from './pages/FAQPage';
+import NuestraHistoriaPage from './pages/NuestraHistoriaPage';
 
 // Wrapper para páginas que NECESITAN centrado extra (como Login/Register/Profile)
 const ContentWrapper = ({ element: Component }) => (
@@ -31,7 +33,8 @@ const ContentWrapper = ({ element: Component }) => (
 const App = () => {
     return (
         <>
-            <ScrollToTop /> 
+            <CloudBackground />
+            <ScrollToTop />
             <Header />
             <SideCart />
             
@@ -57,6 +60,7 @@ const App = () => {
                     
                     {/* INFO */}
                     <Route path="/preguntas-frecuentes" element={<FAQPage />} />
+                    <Route path="/nuestra-historia" element={<NuestraHistoriaPage />} />
                     
                     {/* 404 */}
                     <Route path="*" element={<div style={{padding: '100px', textAlign: 'center'}}><h1>404 - Página no encontrada</h1></div>} />

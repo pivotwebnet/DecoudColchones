@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { getProductos } from '../api/api';
 
 // Componentes
-import ImageCarousel from '../components/ImageCarousel'; 
-import CategoryCards from '../components/CategoryCards'; // <--- El nuevo carrusel de categorías
+import ImageCarousel from '../components/ImageCarousel';
+import CategoryCards from '../components/CategoryCards';
 import ProductLines from '../components/ProductLines';
 import ColchonCard from '../components/ColchonCard';
+import NuestraHistoria from '../components/NuestraHistoria';
 
 const HomePage = () => {
     const [latestProducts, setLatestProducts] = useState([]);
@@ -48,9 +49,9 @@ const HomePage = () => {
             </section>
 
             {/* 4. ¡LO NUEVO! (Últimos ingresos) */}
-            <section className="container-centered" style={{ marginTop: '80px', marginBottom: '80px', padding: '0 20px' }}>
+            <section className="container-centered" style={{ marginTop: 'clamp(40px, 6vw, 80px)', marginBottom: 'clamp(40px, 6vw, 80px)', padding: '0 20px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '2.5rem', color: '#1B365D', marginBottom: '10px', fontWeight: 'bold' }}>
+                    <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', color: 'var(--decoud-blue)', marginBottom: '10px', fontWeight: 'bold', transition: 'color 0.3s ease' }}>
                         ¡Lo Nuevo!
                     </h2>
                     {/* Línea decorativa dorada */}
@@ -58,7 +59,7 @@ const HomePage = () => {
                 </div>
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Cargando novedades...</div>
+                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-dark)', transition: 'color 0.3s ease' }}>Cargando novedades...</div>
                 ) : (
                     <div style={styles.productsGrid}>
                         {latestProducts.map(product => (
@@ -67,6 +68,9 @@ const HomePage = () => {
                     </div>
                 )}
             </section>
+
+            {/* 5. NUESTRA HISTORIA */}
+            <NuestraHistoria />
         </div>
     );
 };
@@ -74,9 +78,8 @@ const HomePage = () => {
 const styles = {
     productsGrid: {
         display: 'grid',
-        // Responsive: se ajusta automáticamente según el ancho
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '30px',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))',
+        gap: 'clamp(15px, 3vw, 30px)',
         width: '100%',
     }
 };

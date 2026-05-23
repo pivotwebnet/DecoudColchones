@@ -10,13 +10,53 @@
   --decoud-blue-dark: #0F213A;  
   --decoud-gold: #D4AF37;       
   --decoud-gold-hover: #b3922a; 
-  --decoud-white: #fbfbf9;      /* Blanco Hueso (Más suave que el blanco puro) */
-  
+  --decoud-white: #F2EBD9;      /* Crema lino — tono premium, muy elegante */
+  --decoud-pure-white: #FEFAF4; /* Blanco cálido para cards y header */
+
   /* Variables Funcionales */
-  --color-primary: var(--decoud-blue);    
-  --color-secondary: var(--decoud-gold);  
+  --color-primary: var(--decoud-blue);
+  --color-secondary: var(--decoud-gold);
   --color-text-dark: #1e293b;   /* Slate 800 (Mucho más suave que el negro) */
   --color-text-light: #f8fafc;
+  --bg-color: var(--decoud-white);
+  --content-bg: var(--decoud-pure-white);
+  --border-color: #e5ddd0;
+  --header-bg: #FEFAF4;
+  --topbar-bg: #1B365D;
+}
+
+/* --- Dark Mode --- */
+body.dark-mode {
+  --decoud-blue: #818cf8;
+  --decoud-blue-dark: #000000;
+  --decoud-white: #0a0a0a;
+  --decoud-pure-white: #121212;
+
+  --color-text-dark: #e2e8f0;
+  --color-text-light: #0a0a0a;
+  --bg-color: #0a0a0a;
+  --content-bg: #121212;
+  --border-color: #262626;
+  --header-bg: #121212;
+  --topbar-bg: #000000;
+
+  background-color: #0a0a0a;
+}
+
+
+/* --- Responsive Utilities --- */
+@media (max-width: 768px) {
+  .content-area {
+    margin: 8px auto;
+    padding: 20px 15px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .container-centered { padding: 0 12px; }
+}
+@media (max-width: 480px) {
+  .content-area { padding: 15px 10px; }
+  .container-centered { padding: 0 10px; }
 }
 
 /* --- 2. Reset y Fondo Global --- */
@@ -25,13 +65,13 @@ body {
   padding: 0;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   color: var(--color-text-dark);
-  background-color: var(--decoud-white);
   min-height: 100vh;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  transition: color 0.3s ease;
 }
 
 #root {
@@ -60,26 +100,69 @@ body {
   padding: 30px;
   
   /* Fondo blanco puro para que el contenido respire */
-  background-color: #ffffff;
+  background-color: var(--content-bg);
   /* Sombra muy sutil para dar elegancia */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
   border-radius: 8px;
   box-sizing: border-box;
+  transition: background-color 0.3s ease;
 }
 
 /* --- 4. Estilos de Botones (Brand Identity) --- */
 
+/*
+  Shimmer universal: un reflejo blanco que cruza el botón al hacer hover.
+  Se aplica automáticamente a .btn-primary, .btn-secondary, .btn-danger
+  y a cualquier <button> genérico.
+*/
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after,
+.btn-secondary::after,
+.btn-danger::after,
+button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  transition: left 0.45s ease;
+  pointer-events: none;
+}
+
+.btn-primary:hover::after,
+.btn-secondary:hover::after,
+.btn-danger:hover::after,
+button:hover::after {
+  left: 160%;
+}
+
 /* Botón Principal (Comprar/Acción): DORADO */
 .btn-primary {
   background-color: var(--decoud-gold);
-  color: var(--decoud-blue); /* Texto azul sobre dorado queda muy premium */
+  color: var(--decoud-blue);
   padding: 12px 24px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
-  text-transform: uppercase; /* Letras mayúsculas para más fuerza */
+  text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+              color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid var(--decoud-gold);
   cursor: pointer;
   display: inline-block;
@@ -89,27 +172,34 @@ body {
 .btn-primary:hover {
   background-color: var(--decoud-gold-hover);
   border-color: var(--decoud-gold-hover);
-  color: #fff; /* Texto blanco al pasar el mouse */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4); /* Sombra dorada */
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.45);
 }
+
+.btn-primary:active { transform: translateY(-1px); }
 
 /* Botón Secundario (Ver más/Detalles): AZUL */
 .btn-secondary {
-    background-color: transparent;
-    color: var(--decoud-blue);
-    border: 2px solid var(--decoud-blue);
-    padding: 10px 22px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: transparent;
+  color: var(--decoud-blue);
+  border: 2px solid var(--decoud-blue);
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease,
+              transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-secondary:hover {
-    background-color: var(--decoud-blue);
-    color: white;
+  background-color: var(--decoud-blue);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(27, 54, 93, 0.3);
 }
+
+.btn-secondary:active { transform: translateY(-1px); }
 
 .btn-danger {
   background-color: #dc2626;
@@ -119,12 +209,16 @@ body {
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .btn-danger:hover {
   background-color: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
 }
+
+.btn-danger:active { transform: translateY(0); }
 
 /* --- 5. Utilidades de Texto y Fondo (NUEVO) --- */
 /* Úsalas en tus componentes: className="text-gold" o className="bg-blue" */
@@ -133,3 +227,56 @@ body {
 .text-blue { color: var(--decoud-blue); }
 .bg-blue { background-color: var(--decoud-blue); color: white; }
 .bg-gold { background-color: var(--decoud-gold); color: var(--decoud-blue); }
+
+/* --- 6. Formularios Globales --- */
+.form-input, 
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="tel"], 
+input[type="number"], 
+select, 
+textarea {
+  background-color: var(--content-bg);
+  color: var(--color-text-dark);
+  border: 1.5px solid var(--border-color);
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus, 
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--decoud-blue);
+  box-shadow: 0 0 0 4px rgba(27, 54, 93, 0.05);
+}
+
+body.dark-mode .form-input:focus, 
+body.dark-mode input:focus, 
+body.dark-mode select:focus, 
+body.dark-mode textarea:focus {
+  box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.1);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+::placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+body.dark-mode ::placeholder {
+  color: #64748b;
+}

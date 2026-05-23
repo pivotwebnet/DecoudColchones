@@ -11,17 +11,17 @@ const CartPage = () => {
 
     if (cartItems.length === 0) {
         return (
-            <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <h2 style={{ color: '#555', marginBottom: '20px' }}>Tu carrito está vacío</h2>
+            <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transition: 'background-color 0.3s ease, color 0.3s ease' }}>
+                <h2 style={{ color: 'var(--color-text-dark)', marginBottom: '20px', transition: 'color 0.3s ease' }}>Tu carrito está vacío</h2>
                 <Link to="/colchones" className="btn-primary">Ir al Catálogo</Link>
             </div>
         );
     }
 
     return (
-        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', padding: '40px 0' }}>
+        <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100vh', padding: '40px 0', transition: 'background-color 0.3s ease' }}>
             <div className="container-centered">
-                <h1 style={{ marginBottom: '30px', fontSize: '2rem', color: '#1e3a8a' }}>Tu Carrito</h1>
+                <h1 style={{ marginBottom: '30px', fontSize: 'clamp(1.4rem, 4vw, 2rem)', color: 'var(--decoud-blue)', transition: 'color 0.3s ease' }}>Tu Carrito</h1>
 
                 <div style={styles.gridContainer}>
                     {/* Lista de Items */}
@@ -50,7 +50,7 @@ const CartPage = () => {
                             <h3 style={styles.summaryTitle}>Resumen</h3>
                             <div style={styles.summaryRow}><span>Subtotal</span><span>{formatPrice(total)}</span></div>
                             <div style={styles.summaryRow}><span>Envío</span><span style={{ color: 'var(--color-success)' }}>A coordinar</span></div>
-                            <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eee' }} />
+                            <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid var(--border-color)' }} />
                             <div style={styles.summaryRowTotal}><span>Total</span><span>{formatPrice(total)}</span></div>
                             
                             {/* --- CAMBIO AQUÍ: --- */}
@@ -71,22 +71,22 @@ const CartPage = () => {
 };
 
 const styles = {
-    gridContainer: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', alignItems: 'start' },
+    gridContainer: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: 'clamp(15px, 3vw, 30px)', alignItems: 'start' },
     itemsColumn: { width: '100%' },
-    itemCard: { display: 'flex', alignItems: 'center', backgroundColor: 'white', padding: '20px', borderRadius: '8px', marginBottom: '15px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' },
-    itemImage: { width: '80px', height: '80px', backgroundColor: '#f4f4f5', borderRadius: '6px', marginRight: '20px', overflow:'hidden', flexShrink: 0 },
+    itemCard: { display: 'flex', alignItems: 'center', backgroundColor: 'var(--content-bg)', padding: '20px', borderRadius: '8px', marginBottom: '15px', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'background-color 0.3s ease, border-color 0.3s ease' },
+    itemImage: { width: '80px', height: '80px', backgroundColor: 'var(--border-color)', borderRadius: '6px', marginRight: '20px', overflow:'hidden', flexShrink: 0, transition: 'background-color 0.3s ease' },
     itemInfo: { flex: 1 },
-    itemName: { fontSize: '1.1rem', margin: '0 0 5px 0', color: '#1e3a8a', fontWeight: '600' },
+    itemName: { fontSize: '1.1rem', margin: '0 0 5px 0', color: 'var(--decoud-blue)', fontWeight: '600', transition: 'color 0.3s ease' },
     itemVariant: { fontSize: '0.9rem', color: '#64748b', margin: 0 },
     removeBtn: { background: 'none', border: 'none', color: '#ef4444', fontSize: '0.85rem', cursor: 'pointer', padding: 0, marginTop: '8px', textDecoration: 'underline' },
     itemMeta: { textAlign: 'right', minWidth: '100px' },
     quantity: { display: 'block', fontSize: '0.9rem', color: '#64748b', marginBottom: '5px' },
     price: { display: 'block', fontSize: '1.2rem', fontWeight: 'bold', color: '#D4AF37' }, // Precio en Dorado Decoud
     summaryColumn: { width: '100%' },
-    summaryCard: { backgroundColor: 'white', padding: '30px', borderRadius: '8px', border: '1px solid #eee', position: 'sticky', top: '100px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' },
-    summaryTitle: { fontSize: '1.3rem', marginBottom: '20px', color: '#1e3a8a', borderBottom: '2px solid #D4AF37', paddingBottom: '10px', display: 'inline-block' },
-    summaryRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '1rem', color: '#475569' },
-    summaryRowTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '1.5rem', fontWeight: 'bold', color: '#1e3a8a', marginTop: '10px' }
+    summaryCard: { backgroundColor: 'var(--content-bg)', padding: '30px', borderRadius: '8px', border: '1px solid var(--border-color)', position: 'sticky', top: '100px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', transition: 'background-color 0.3s ease, border-color 0.3s ease' },
+    summaryTitle: { fontSize: '1.3rem', marginBottom: '20px', color: 'var(--decoud-blue)', borderBottom: '2px solid #D4AF37', paddingBottom: '10px', display: 'inline-block', transition: 'color 0.3s ease' },
+    summaryRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '1rem', color: 'var(--color-text-dark)', transition: 'color 0.3s ease' },
+    summaryRowTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--decoud-blue)', marginTop: '10px', transition: 'color 0.3s ease' }
 };
 
 export default CartPage;

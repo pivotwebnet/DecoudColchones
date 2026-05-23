@@ -48,7 +48,8 @@ const ProductDetail = () => {
     };
 
     return (
-        <div className="product-page-pro"> 
+        <div style={{ backgroundColor: 'var(--content-bg)', minHeight: '100vh' }}>
+        <div className="product-page-pro">
             
             {/* TOAST NOTIFICATION */}
             <div className={`toast-pro ${toast.show ? 'show' : ''}`}>
@@ -97,21 +98,27 @@ const ProductDetail = () => {
                     {/* BENEFICIOS ICONOGRÁFICOS */}
                     <div className="tech-specs-grid">
                         <div className="tech-card">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <div className="tech-icon-wrapper">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
                             <div className="tech-info">
                                 <span className="tech-label">Garantía</span>
                                 <span className="tech-val">{product.garantia}</span>
                             </div>
                         </div>
                         <div className="tech-card">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                            <div className="tech-icon-wrapper">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                            </div>
                             <div className="tech-info">
                                 <span className="tech-label">Soporte</span>
-                                <span className="tech-val">Hasta {product.peso_max_max}kg</span>
+                                <span className="tech-val">Hasta {product.peso_max_max} kg</span>
                             </div>
                         </div>
                         <div className="tech-card">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"></path><path d="M15 5.88V22"></path><path d="M23 12v10"></path><path d="M2 2h20"></path><path d="M2 22h20"></path></svg>
+                            <div className="tech-icon-wrapper">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B365D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"></path><path d="M15 5.88V22"></path><path d="M23 12v10"></path><path d="M2 2h20"></path><path d="M2 22h20"></path></svg>
+                            </div>
                             <div className="tech-info">
                                 <span className="tech-label">Altura</span>
                                 <span className="tech-val">{product.altura} cm</span>
@@ -146,74 +153,134 @@ const ProductDetail = () => {
                 <button className="btn-buy-now" onClick={handleAddToCart}>AGREGAR</button>
             </div>
 
-            <div className="full-description">
-                <h2 className="section-title">Detalles del Producto</h2>
-                <div className="desc-content" dangerouslySetInnerHTML={{ __html: product.descripcion_base }}></div>
+            <div className="product-details-extra">
+                <div className="description-section">
+                    <h2 className="section-title">Descripción</h2>
+                    <div className="desc-content" dangerouslySetInnerHTML={{ __html: product.descripcion_base }}></div>
+                </div>
+
+                <div className="specs-section">
+                    <h2 className="section-title">Ficha Técnica</h2>
+                    <div className="specs-table">
+                        <div className="spec-row">
+                            <span className="spec-name">Categoría</span>
+                            <span className="spec-value">{product.categoria?.nombre}</span>
+                        </div>
+                        <div className="spec-row">
+                            <span className="spec-name">Línea</span>
+                            <span className="spec-value">{product.linea?.nombre || 'Estándar'}</span>
+                        </div>
+                        <div className="spec-row">
+                            <span className="spec-name">Medida</span>
+                            <span className="spec-value">{product.medida?.replace('_', ' ')}</span>
+                        </div>
+                        <div className="spec-row">
+                            <span className="spec-name">Altura</span>
+                            <span className="spec-value">{product.altura} cm</span>
+                        </div>
+                        {product.densidad && (
+                            <div className="spec-row">
+                                <span className="spec-name">Densidad</span>
+                                <span className="spec-value">{product.densidad} kg/m³</span>
+                            </div>
+                        )}
+                        <div className="spec-row">
+                            <span className="spec-name">Soporte Máximo</span>
+                            <span className="spec-value">{product.peso_max_max} kg por lado</span>
+                        </div>
+                        <div className="spec-row">
+                            <span className="spec-name">Top Pillow</span>
+                            <span className="spec-value">{product.tiene_top_pillow ? 'Sí' : 'No'}</span>
+                        </div>
+                        <div className="spec-row">
+                            <span className="spec-name">Garantía</span>
+                            <span className="spec-value">{product.garantia}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <style>{`
-                .product-page-pro { max-width: 1200px; margin: 0 auto; padding: 60px 20px; font-family: 'Inter', sans-serif; }
-                .product-layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; margin-bottom: 80px; }
-                
+                .product-page-pro { max-width: 1200px; margin: 0 auto; padding: clamp(20px, 4vw, 60px) clamp(10px, 3vw, 20px); font-family: 'Inter', sans-serif; }
+                .product-layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(20px, 5vw, 60px); margin-bottom: 60px; }
+
                 /* Galería */
                 .main-frame { border-radius: 16px; overflow: hidden; background: #fff; border: 1px solid #f1f5f9; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
                 .main-frame img { width: 100%; height: auto; display: block; }
-                .thumbnail-strip { display: flex; gap: 15px; }
-                .thumb-box { width: 80px; height: 80px; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+                .thumbnail-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+                .thumb-box { width: clamp(55px, 10vw, 80px); height: clamp(55px, 10vw, 80px); border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
                 .thumb-box.active { border-color: #1B365D; }
                 .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
                 /* Info */
                 .breadcrumb-pro { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; }
                 .breadcrumb-pro a { color: inherit; text-decoration: none; }
-                .product-title { font-size: 2.8rem; font-weight: 900; color: #1B365D; margin-bottom: 20px; line-height: 1.1; }
-                .price-tag-pro { display: flex; align-items: baseline; gap: 15px; margin-bottom: 25px; }
-                .price-main { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
+                .product-title { font-size: clamp(1.5rem, 5vw, 2.8rem); font-weight: 900; color: #1B365D; margin-bottom: 20px; line-height: 1.1; }
+                .price-tag-pro { display: flex; align-items: baseline; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+                .price-main { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; color: #1e293b; }
                 .price-old { font-size: 1.2rem; color: #94a3b8; text-decoration: line-through; }
-                .installments-pro { display: flex; alignItems: center; gap: 10px; background: #fdfaf1; padding: 12px 20px; borderRadius: 10px; color: #854d0e; font-size: 0.95rem; margin-bottom: 30px; border: 1px solid #fef08a; }
+                .installments-pro { display: flex; align-items: center; gap: 10px; background: #fdfaf1; padding: 12px 15px; border-radius: 10px; color: #854d0e; font-size: 0.9rem; margin-bottom: 30px; border: 1px solid #fef08a; flex-wrap: wrap; }
 
                 /* Specs Grid */
-                .tech-specs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
-                .tech-card { padding: 15px; background: #f8fafc; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #f1f5f9; }
-                .tech-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 700; }
-                .tech-val { font-size: 0.9rem; color: #1B365D; font-weight: 700; }
+                .tech-specs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 40px; }
+                .tech-card { padding: 12px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #f1f5f9; }
+                .tech-icon-wrapper { background: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-shrink: 0; }
+                .tech-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+                .tech-label { font-size: 0.6rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+                .tech-val { font-size: 0.82rem; color: #1B365D; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
                 /* Actions */
-                .buy-actions-pro { display: flex; gap: 20px; margin-bottom: 30px; }
+                .buy-actions-pro { display: flex; gap: 15px; margin-bottom: 30px; }
                 .qty-pro { display: flex; align-items: center; background: #f1f5f9; border-radius: 10px; padding: 5px; }
-                .qty-pro button { width: 45px; height: 45px; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: #1B365D; }
+                .qty-pro button { width: 44px; height: 44px; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: #1B365D; }
                 .qty-pro span { width: 40px; text-align: center; font-weight: 800; color: #1B365D; font-size: 1.1rem; }
-                .btn-buy-now { flex: 1; background: #1B365D; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(27, 54, 93, 0.2); }
+                .btn-buy-now { flex: 1; background: #1B365D; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(27, 54, 93, 0.2); padding: 14px; }
                 .btn-buy-now:hover { background: #152a4a; transform: translateY(-2px); box-shadow: 0 15px 25px rgba(27, 54, 93, 0.3); }
 
-                .shipping-highlight { display: flex; align-items: center; gap: 10px; color: #059669; font-size: 0.9rem; }
+                .shipping-highlight { display: flex; align-items: center; gap: 10px; color: #059669; font-size: 0.9rem; font-weight: 500; }
+
+                /* Details Extra */
+                .product-details-extra { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(30px, 6vw, 80px); padding-top: 60px; border-top: 1px solid #f1f5f9; }
+                .section-title { font-size: clamp(1.1rem, 3vw, 1.5rem); color: #1B365D; margin-bottom: 30px; font-weight: 800; position: relative; padding-bottom: 10px; }
+                .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 50px; height: 3px; background: #D4AF37; }
+
+                .desc-content { color: #475569; line-height: 1.8; font-size: 1rem; }
+
+                .specs-table { background: #f8fafc; border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; }
+                .spec-row { display: flex; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 10px; }
+                .spec-row:last-child { border-bottom: none; }
+                .spec-name { color: #64748b; font-weight: 600; font-size: 0.88rem; }
+                .spec-value { color: #1B365D; font-weight: 700; font-size: 0.88rem; text-align: right; }
 
                 /* Toast */
-                .toast-pro { position: fixed; top: 100px; right: 30px; background: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 15px; z-index: 2000; transform: translateX(150%); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                .toast-pro { position: fixed; top: 100px; right: 15px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; z-index: 2000; transform: translateX(150%); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: calc(100vw - 30px); }
                 .toast-pro.show { transform: translateX(0); }
-                .toast-link { background: #1B365D; color: white; padding: 8px 15px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-decoration: none; }
-
-                @media (max-width: 900px) {
-                    .product-layout-grid { grid-template-columns: 1fr; gap: 40px; }
-                    .product-title { font-size: 2rem; }
-                }
-
-                .sticky-mobile-buy { 
-                    position: fixed; bottom: 0; left: 0; width: 100%; 
-                    background: white; padding: 15px 20px; display: none; 
-                    align-items: center; justify-content: space-between; 
-                    box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 1000;
-                    border-top: 1px solid #f1f5f9;
-                }
-                .sticky-info { display: flex; flex-direction: column; }
-                .sticky-title { font-size: 0.85rem; font-weight: 700; color: #1B365D; }
-                .sticky-price { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+                .toast-link { background: #1B365D; color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; text-decoration: none; white-space: nowrap; }
 
                 @media (max-width: 768px) {
+                    .product-layout-grid, .product-details-extra { grid-template-columns: 1fr; gap: 30px; }
+                    .tech-specs-grid { grid-template-columns: repeat(3, 1fr); }
+                    .buy-actions-pro { flex-direction: column; }
                     .sticky-mobile-buy { display: flex; }
                     .product-page-pro { padding-bottom: 100px; }
                 }
+                @media (max-width: 480px) {
+                    .tech-specs-grid { grid-template-columns: 1fr 1fr; }
+                    .tech-icon-wrapper { display: none; }
+                }
+
+                .sticky-mobile-buy {
+                    position: fixed; bottom: 0; left: 0; width: 100%;
+                    background: white; padding: 12px 16px; display: none;
+                    align-items: center; justify-content: space-between;
+                    box-shadow: 0 -10px 30px rgba(0,0,0,0.1); z-index: 1000;
+                    border-top: 1px solid #f1f5f9; box-sizing: border-box; gap: 12px;
+                }
+                .sticky-info { display: flex; flex-direction: column; min-width: 0; }
+                .sticky-title { font-size: 0.82rem; font-weight: 700; color: #1B365D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .sticky-price { font-size: 1rem; font-weight: 800; color: #1e293b; }
             `}</style>
+        </div>
         </div>
     );
 };

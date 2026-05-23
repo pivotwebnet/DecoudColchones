@@ -60,13 +60,13 @@ const AuthLayout = ({ children, title, subtitle }) => {
             </div>
 
             <style>{`
-                .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; background-color: var(--decoud-white); }
-                .auth-card { width: 100%; max-width: 1000px; min-height: 600px; display: flex; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+                .auth-wrapper { min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; background-color: var(--bg-color); transition: background-color 0.3s ease; }
+                .auth-card { width: 100%; max-width: 1000px; min-height: 600px; display: flex; background: var(--content-bg); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease; }
                 
                 .auth-form-side { flex: 1; padding: 60px; display: flex; align-items: center; justify-content: center; }
                 .auth-content { width: 100%; max-width: 380px; }
-                .auth-title { font-size: 2rem; font-weight: 800; color: #1B365D; margin-bottom: 8px; }
-                .auth-subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 30px; }
+                .auth-title { font-size: 2rem; font-weight: 800; color: var(--decoud-blue); margin-bottom: 8px; transition: color 0.3s ease; }
+                .auth-subtitle { color: var(--color-text-dark); font-size: 0.95rem; margin-bottom: 30px; opacity: 0.8; transition: color 0.3s ease; }
 
                 .auth-ad-side { flex: 1.1; position: relative; display: flex; flex-direction: column; }
                 .auth-ad-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: opacity 1s ease; opacity: 0; display: flex; align-items: flex-end; padding: 60px; }

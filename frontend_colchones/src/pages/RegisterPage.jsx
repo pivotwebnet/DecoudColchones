@@ -95,21 +95,21 @@ const RegisterPage = () => {
             </form>
 
             <style>{`
-                .modern-form { display: flex; flex-direction: column; gap: 18px; }
+                .modern-form { display: flex; flex-direction: column; gap: 18px; transition: all 0.3s ease; }
                 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
                 
                 .input-group { display: flex; flex-direction: column; gap: 6px; }
-                .input-group label { font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase; }
-                .input-group input { padding: 12px 15px; border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: 0.9rem; outline: none; transition: all 0.2s; }
-                .input-group input:focus { border-color: #1B365D; }
+                .input-group label { font-size: 0.8rem; font-weight: 700; color: var(--color-text-dark); text-transform: uppercase; transition: color 0.3s ease; }
+                .input-group input { padding: 12px 15px; border-radius: 8px; border: 1.5px solid var(--border-color); background: var(--content-bg); color: var(--color-text-dark); font-size: 0.9rem; outline: none; transition: all 0.3s ease; }
+                .input-group input:focus { border-color: var(--decoud-blue); }
 
-                .auth-submit-btn { background: #1B365D; color: white; border: none; padding: 16px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; margin-top: 10px; letter-spacing: 1px; }
-                .auth-submit-btn:hover { background: #152a4a; transform: translateY(-2px); }
+                .auth-submit-btn { background: var(--decoud-blue); color: var(--content-bg); border: none; padding: 16px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; letter-spacing: 1px; }
+                .auth-submit-btn:hover { opacity: 0.9; transform: translateY(-2px); }
                 .auth-submit-btn:disabled { opacity: 0.7; }
 
                 .error-alert { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 12px 15px; border-radius: 10px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
-                .auth-footer-text { text-align: center; font-size: 0.9rem; color: #64748b; }
-                .auth-footer-text a { color: #1B365D; font-weight: 700; text-decoration: none; }
+                .auth-footer-text { text-align: center; font-size: 0.9rem; color: var(--color-text-dark); transition: color 0.3s ease; }
+                .auth-footer-text a { color: var(--decoud-blue); font-weight: 700; text-decoration: none; transition: color 0.3s ease; }
 
                 @media (max-width: 500px) {
                     .form-grid { grid-template-columns: 1fr; }
