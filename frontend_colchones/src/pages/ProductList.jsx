@@ -33,8 +33,28 @@ const ProductList = () => {
     const [selectedMeasure, setSelectedMeasure] = useState(null);
     const [sortOrder, setSortOrder] = useState('-creado_en');
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+    const [localMaxPrice, setLocalMaxPrice] = useState(1000000);
     const [minSupport, setMinSupport] = useState('');
     const [isOferta, setIsOferta] = useState(false);
+
+    // Sincronizar localMaxPrice cuando se limpia el filtro desde fuera
+    useEffect(() => {
+        if (priceRange.max === '') {
+            setLocalMaxPrice(1000000);
+        }
+    }, [priceRange.max]);
+
+    // Debounce para el filtro de precio
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // Solo actualizamos si el valor es diferente para evitar fetch innecesario
+            if (priceRange.max !== localMaxPrice.toString()) {
+                setPriceRange(p => ({ ...p, min: 0, max: localMaxPrice }));
+            }
+        }, 400); // 400ms de espera
+
+        return () => clearTimeout(timer);
+    }, [localMaxPrice]);
 
     const measures = [
         { label: '1 Plaza', value: '1_plaza' },
@@ -178,10 +198,20 @@ const ProductList = () => {
                     </div>
 
                     <div className="filter-group">
-                        <h3>Precio</h3>
-                        <div className="price-inputs">
-                            <input type="number" placeholder="Mín" value={priceRange.min} onChange={(e) => setPriceRange(p => ({...p, min: e.target.value}))} />
-                            <input type="number" placeholder="Máx" value={priceRange.max} onChange={(e) => setPriceRange(p => ({...p, max: e.target.value}))} />
+                        <h3>Precio Máximo</h3>
+                        <div className="price-slider-container">
+                            <input 
+                                type="range" 
+                                min="0" 
+                                max="1000000" 
+                                step="10000"
+                                value={localMaxPrice} 
+                                onChange={(e) => setLocalMaxPrice(e.target.value)} 
+                                className="price-slider"
+                            />
+                            <div className="price-display">
+                                Hasta: <b>${Number(localMaxPrice).toLocaleString('es-AR')}</b>
+                            </div>
                         </div>
                     </div>
 
@@ -230,7 +260,7 @@ const ProductList = () => {
 
                         {(priceRange.min || priceRange.max) && (
                             <div className="filter-tag">
-                                Precio: {priceRange.min || 0} - {priceRange.max || 'max'}
+                                Precio: {priceRange.max ? `Hasta $${Number(priceRange.max).toLocaleString('es-AR')}` : 'Todos'}
                                 <button onClick={() => setPriceRange({min:'', max:''})}>×</button>
                             </div>
                         )}
@@ -354,8 +384,13 @@ const ProductList = () => {
                 .filters-sidebar button.active { color: var(--decoud-blue); font-weight: 700; }
                 
                 .filter-select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); color: #475569; outline: none; background-color: var(--content-bg); transition: background-color 0.3s ease, border-color 0.3s ease; }
-                .price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-                .price-inputs input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; outline: none; background-color: var(--content-bg); color: var(--color-text-dark); transition: all 0.3s ease; }
+                
+                .price-slider-container { margin-top: 10px; }
+                .price-slider { width: 100%; height: 6px; background: var(--border-color); border-radius: 5px; outline: none; -webkit-appearance: none; margin: 15px 0; cursor: pointer; }
+                .price-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--decoud-blue); cursor: pointer; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+                .price-slider::-moz-range-thumb { width: 18px; height: 18px; background: var(--decoud-blue); cursor: pointer; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+                .price-display { font-size: 0.9rem; color: #64748b; }
+                .price-display b { color: var(--decoud-blue); }
                 
                 .reset-btn { width: 100%; padding: 12px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; color: #64748b; font-weight: 600; margin-top: 10px; transition: all 0.3s ease; }
                 .reset-btn:hover { background: var(--border-color); color: var(--decoud-blue); opacity: 0.8; }

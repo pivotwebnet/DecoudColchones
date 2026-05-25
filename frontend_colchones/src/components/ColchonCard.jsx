@@ -135,7 +135,7 @@ const ColchonCard = ({ product }) => {
                         {hasDiscount && (
                             <p style={styles.oldPrice}>{formatPrice(previousPrice)}</p>
                         )}
-                        <p style={{...styles.price, color: hasDiscount ? '#dc2626' : 'var(--decoud-blue)'}}>
+                        <p style={{...styles.price, color: hasDiscount ? '#D4AF37' : 'var(--decoud-blue)'}}>
                             {formatPrice(displayPrice)}
                         </p>
                         {hasDiscount && (
@@ -182,10 +182,10 @@ const styles = {
     installments: { fontSize: '0.85rem', color: '#64748b', marginTop: '4px' },
     discountBadge: {
         position: 'absolute', top: '12px', right: '12px', zIndex: 10,
-        backgroundColor: '#dc2626', color: '#fff',
+        backgroundColor: '#D4AF37', color: '#1B365D',
         fontSize: '0.75rem', fontWeight: '900', letterSpacing: '0.5px',
         padding: '5px 10px', borderRadius: '20px',
-        boxShadow: '0 2px 8px rgba(220,38,38,0.4)',
+        boxShadow: '0 2px 10px rgba(212,175,55,0.3)',
     },
     destacadoBadge: {
         position: 'absolute', top: '12px', right: '12px', zIndex: 10,
