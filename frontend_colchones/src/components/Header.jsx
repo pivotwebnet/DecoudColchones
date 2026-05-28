@@ -6,6 +6,38 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import SearchBar from './SearchBar';
 
+const IconTruck = () => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+);
+const IconCard = () => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+);
+const IconPercent = () => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
+    </svg>
+);
+const IconStar = () => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </svg>
+);
+
+const TopBarItem = ({ icon, text }) => (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', padding: '0 4px' }}>
+        <span style={{ opacity: 0.85 }}>{icon}</span>
+        <span>{text}</span>
+    </span>
+);
+
+const TopBarSep = () => (
+    <span style={{ margin: '0 20px', opacity: 0.35 }}>|</span>
+);
+
 const Header = () => {
     const { totalItems, setIsCartOpen } = useCart();
     const { user } = useAuth();
@@ -36,14 +68,27 @@ const Header = () => {
             transition: 'box-shadow 0.3s ease, background-color 0.3s ease'
         }}>
             
-            {/* TOP BAR - Beneficios */}
-            <div style={{ 
-                backgroundColor: 'var(--topbar-bg)', color: 'white', fontSize: '0.7rem', 
-                height: isScrolled ? '30px' : '35px', // Cambio mínimo de altura para evitar saltos bruscos
-                overflow: 'hidden', transition: 'all 0.4s ease-in-out',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', letterSpacing: '0.5px'
+            {/* TOP BAR - Ticker animado */}
+            <div style={{
+                backgroundColor: 'var(--topbar-bg)', color: 'white',
+                height: isScrolled ? '28px' : '34px',
+                overflow: 'hidden', transition: 'height 0.4s ease-in-out',
+                display: 'flex', alignItems: 'center',
             }}>
-                🚚 ENVÍO SIN CARGO EN RAFAELA Y ZONA • 💳 12 CUOTAS SIN INTERÉS
+                <div className="topbar-ticker">
+                    {[...Array(3)].map((_, rep) => (
+                        <div key={rep} className="topbar-track" aria-hidden={rep > 0}>
+                            <TopBarItem icon={<IconTruck />} text="Envío sin cargo en Rafaela y zona" />
+                            <TopBarSep />
+                            <TopBarItem icon={<IconCard />} text="12 cuotas sin interés" />
+                            <TopBarSep />
+                            <TopBarItem icon={<IconPercent />} text="10% de descuento pagando con transferencia" />
+                            <TopBarSep />
+                            <TopBarItem icon={<IconStar />} text="Colchones fabricados en Rafaela" />
+                            <TopBarSep />
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* MAIN HEADER */}
@@ -60,8 +105,26 @@ const Header = () => {
                     </button>
 
                     {/* LOGO */}
-                    <Link to="/" style={{ flex: '0 0 auto' }}>
-                        <img src="/logotipo.png" alt="Decoud" style={{ height: isScrolled ? '35px' : '45px', transition: 'height 0.3s', filter: darkMode ? 'invert(1) grayscale(1) brightness(1.5)' : 'none' }} />
+                    <Link to="/" style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center' }}>
+                        <div style={{
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'transparent',
+                            borderRadius: '10px',
+                            padding: darkMode ? '4px 10px' : '0',
+                            transition: 'all 0.3s ease',
+                        }}>
+                            <img
+                                src="/logotipo.png"
+                                alt="Decoud Colchones"
+                                style={{
+                                    height: isScrolled ? '42px' : '58px',
+                                    transition: 'height 0.3s ease',
+                                    display: 'block',
+                                    filter: darkMode
+                                        ? 'brightness(0) invert(1)'
+                                        : 'drop-shadow(0 1px 3px rgba(0,0,0,0.15))',
+                                }}
+                            />
+                        </div>
                     </Link>
 
                     {/* SEARCH (Hidden on mobile, shown on desktop) */}
@@ -166,6 +229,29 @@ styleSheet.innerText = `
     .navLink:hover { color: var(--decoud-gold) !important; }
     @media (max-width: 360px) {
         .header-actions-gap { gap: 8px !important; }
+    }
+
+    /* ── Ticker animado topbar ── */
+    .topbar-ticker {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+    }
+    .topbar-track {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        animation: ticker-scroll 30s linear infinite;
+    }
+    @keyframes ticker-scroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+    .topbar-ticker:hover .topbar-track {
+        animation-play-state: paused;
     }
 `;
 document.head.appendChild(styleSheet);

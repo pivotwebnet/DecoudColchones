@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
-from cloudinary.models import CloudinaryField
 
 User = get_user_model()
 
@@ -147,7 +146,7 @@ class Banner(models.Model):
 class LineaProducto(models.Model):
     nombre = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
-    imagen = CloudinaryField('imagen')
+    imagen = models.ImageField(upload_to='lineas/', blank=True, null=True)
     orden = models.IntegerField(default=0)
     activa = models.BooleanField(default=True)
 

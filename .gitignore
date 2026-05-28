@@ -3,6 +3,10 @@
 __pycache__/
 *.pyc
 
+# Variables de entorno y secretos — NUNCA subir al repo
+.env
+client_secret_*.json
+
 # Ignorar Dependencias de Node.js (Frontend)
 frontend_colchones/node_modules/
 

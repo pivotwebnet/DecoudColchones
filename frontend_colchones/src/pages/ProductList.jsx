@@ -126,7 +126,12 @@ const ProductList = () => {
                 <div className="ofertas-header">
                     <div className="ofertas-header-inner">
                         <span className="ofertas-tag">PRECIOS ESPECIALES</span>
-                        <h1 className="ofertas-title">🏷️ Ofertas</h1>
+                        <h1 className="ofertas-title">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle', marginRight:'10px', marginBottom:'4px'}}>
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                            </svg>
+                            Ofertas
+                        </h1>
                         <p className="ofertas-subtitle">Productos destacados y con descuento — de todas las categorías</p>
                         <button className="ver-catalogo-btn" onClick={() => setIsOferta(false)}>
                             Ver catálogo completo →

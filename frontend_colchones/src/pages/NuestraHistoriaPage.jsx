@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 // Reemplazar src: null con la URL real de cada imagen cuando estén disponibles
 const photos = [
@@ -111,6 +112,29 @@ const NuestraHistoriaPage = () => (
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ── CALL TO ACTION ── */}
+    <section className="historia-cta-section">
+      <div className="container-centered historia-cta-inner">
+        <span className="historia-tag" style={{ color: 'var(--decoud-gold)' }}>NUESTROS PRODUCTOS</span>
+        <h2 className="historia-cta-heading">Encontrá el colchón ideal para vos</h2>
+        <p className="historia-cta-body">
+          Casi cuatro décadas eligiendo calidad para que vos puedas descansar mejor.
+          Explorá nuestro catálogo y encontrá el que se adapta a tu cuerpo y presupuesto.
+        </p>
+        <div className="historia-cta-actions">
+          <Link to="/colchones" className="historia-cta-btn-primary">
+            Ver catálogo completo
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </Link>
+          <Link to="/colchones?oferta=true" className="historia-cta-btn-secondary">
+            Ver ofertas
+          </Link>
         </div>
       </div>
     </section>
@@ -312,6 +336,83 @@ const NuestraHistoriaPage = () => (
         color: var(--color-text-dark);
         line-height: 1.65;
         margin: 0;
+      }
+
+      /* ── CALL TO ACTION ── */
+      .historia-cta-section {
+        background: linear-gradient(135deg, #0F213A 0%, #1B365D 60%, #1e3d6e 100%);
+        padding: 90px 20px;
+        text-align: center;
+      }
+      .historia-cta-inner {
+        max-width: 620px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .historia-cta-heading {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.15;
+        margin: 0;
+      }
+      .historia-cta-body {
+        font-size: 0.98rem;
+        color: #94a3b8;
+        line-height: 1.75;
+        margin: 0;
+        max-width: 500px;
+      }
+      .historia-cta-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 8px;
+      }
+      .historia-cta-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--decoud-gold);
+        color: #1B365D;
+        font-weight: 800;
+        font-size: 0.95rem;
+        padding: 15px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        letter-spacing: 0.02em;
+      }
+      .historia-cta-btn-primary:hover {
+        background: #c9a22e;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(212,175,55,0.35);
+      }
+      .historia-cta-btn-primary svg {
+        transition: transform 0.2s ease;
+      }
+      .historia-cta-btn-primary:hover svg {
+        transform: translateX(4px);
+      }
+      .historia-cta-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: 15px 28px;
+        border-radius: 10px;
+        border: 1.5px solid rgba(255,255,255,0.25);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      .historia-cta-btn-secondary:hover {
+        border-color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.07);
       }
 
       /* ── RESPONSIVE ── */

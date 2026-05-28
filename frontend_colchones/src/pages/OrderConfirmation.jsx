@@ -1,22 +1,62 @@
 // src/pages/OrderConfirmation.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate, Link } from 'react-router-dom';
 import CheckoutSteps from '../components/CheckoutSteps';
 
+const FieldError = ({ msg }) =>
+  msg ? (
+    <span style={{
+      color: '#ef4444', fontSize: '0.8rem', marginTop: '-8px',
+      display: 'flex', alignItems: 'center', gap: '4px'
+    }}>
+      <span style={{
+        width: 16, height: 16, borderRadius: '50%', background: '#ef4444',
+        color: '#fff', fontSize: '0.7rem', fontWeight: 'bold',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+      }}>!</span>
+      {msg}
+    </span>
+  ) : null;
+
 const OrderConfirmation = () => {
   const { cartItems, total, shippingData, setShippingData } = useCart();
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+
+  const clearError = (name) => {
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+  };
 
   const handleChange = (e) => {
     setShippingData({ ...shippingData, [e.target.name]: e.target.value });
+    clearError(e.target.name);
+  };
+
+  const handleNumericChange = (e, maxLen) => {
+    const soloNumeros = e.target.value.replace(/\D/g, '').slice(0, maxLen);
+    setShippingData({ ...shippingData, [e.target.name]: soloNumeros });
+    clearError(e.target.name);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (shippingData.telefono.length < 6) {
-        alert("Por favor ingresa un teléfono válido para el envío.");
-        return;
+    const newErrors = {};
+
+    const dni = shippingData.dni || '';
+    if (dni.length < 8 || dni.length > 11)
+      newErrors.dni = 'Debe tener entre 8 y 11 dígitos numéricos.';
+
+    const tel = shippingData.telefono || '';
+    if (tel.length !== 10)
+      newErrors.telefono = 'Debe tener exactamente 10 dígitos (sin 0 ni 15).';
+
+    if (shippingData.provincia === 'Otra' && !shippingData.otraProvincia?.trim())
+      newErrors.otraProvincia = 'Por favor indicá de qué provincia sos.';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
     navigate('/checkout');
   };
@@ -25,7 +65,6 @@ const OrderConfirmation = () => {
 
   return (
     <div className="container-centered" style={{ padding: '20px 20px 60px', transition: 'all 0.3s ease' }}>
-      
       <CheckoutSteps />
 
       <h2 style={{ color: 'var(--decoud-blue)', borderBottom: '2px solid var(--decoud-gold)', display: 'inline-block', marginBottom: '30px', transition: 'color 0.3s ease' }}>
@@ -40,8 +79,33 @@ const OrderConfirmation = () => {
                 <input required name="nombre" placeholder="Nombre" value={shippingData.nombre} onChange={handleChange} className="form-input" />
                 <input required name="apellido" placeholder="Apellido" value={shippingData.apellido} onChange={handleChange} className="form-input" />
             </div>
-            <input required name="dni" placeholder="DNI / CUIL" value={shippingData.dni} onChange={handleChange} className="form-input" />
-            <input required name="telefono" type="tel" placeholder="Teléfono (WhatsApp Obligatorio)" value={shippingData.telefono} onChange={handleChange} className="form-input" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <input
+                required
+                name="dni"
+                placeholder="DNI / CUIL (8 a 11 dígitos)"
+                value={shippingData.dni || ''}
+                onChange={(e) => handleNumericChange(e, 11)}
+                inputMode="numeric"
+                className="form-input"
+                style={errors.dni ? { borderColor: '#ef4444' } : {}}
+              />
+              <FieldError msg={errors.dni} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <input
+                required
+                name="telefono"
+                type="tel"
+                placeholder="Teléfono WhatsApp (10 dígitos, sin 0 ni 15)"
+                value={shippingData.telefono || ''}
+                onChange={(e) => handleNumericChange(e, 10)}
+                inputMode="numeric"
+                className="form-input"
+                style={errors.telefono ? { borderColor: '#ef4444' } : {}}
+              />
+              <FieldError msg={errors.telefono} />
+            </div>
             <input required name="direccion" placeholder="Dirección exacta (Calle y altura)" value={shippingData.direccion} onChange={handleChange} className="form-input" />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', gap: '15px' }}>
                 <input required name="ciudad" placeholder="Ciudad (Ej: Rafaela)" value={shippingData.ciudad} onChange={handleChange} className="form-input" />
@@ -53,6 +117,20 @@ const OrderConfirmation = () => {
                     <option value="Otra">Otra provincia...</option>
                 </select>
             </div>
+            {shippingData.provincia === 'Otra' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <input
+                      required
+                      name="otraProvincia"
+                      placeholder="¿De qué provincia sos?"
+                      value={shippingData.otraProvincia || ''}
+                      onChange={handleChange}
+                      className="form-input"
+                      style={{ borderColor: errors.otraProvincia ? '#ef4444' : 'var(--decoud-gold)' }}
+                  />
+                  <FieldError msg={errors.otraProvincia} />
+                </div>
+            )}
 
             {/* --- AVISO DE ENVÍO DESTACADO --- */}
             <div className="shipping-notice">

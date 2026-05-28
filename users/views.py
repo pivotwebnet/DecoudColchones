@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserRegistrationSerializer, UserSerializer, MyTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
+import requests as http_requests
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -44,3 +46,41 @@ class ChangePasswordView(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class GoogleAuthView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        access_token = request.data.get('access_token')
+        if not access_token:
+            return Response({'error': 'Token requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        google_resp = http_requests.get(
+            'https://www.googleapis.com/oauth2/v3/userinfo',
+            headers={'Authorization': f'Bearer {access_token}'},
+            timeout=8,
+        )
+
+        if google_resp.status_code != 200:
+            return Response({'error': 'Token de Google inválido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        info = google_resp.json()
+        email = info.get('email')
+        if not email:
+            return Response({'error': 'No se pudo obtener el email de Google.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user, _ = User.objects.get_or_create(
+            email=email,
+            defaults={
+                'username': email,
+                'first_name': info.get('given_name', ''),
+                'last_name': info.get('family_name', ''),
+            },
+        )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })

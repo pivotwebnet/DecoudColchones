@@ -1,8 +1,9 @@
 // src/pages/ProductDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProductoBySlug } from '../api/api'; 
-import { useCart } from '../context/CartContext'; 
+import { getProductoBySlug, getProductos } from '../api/api';
+import { useCart } from '../context/CartContext';
+import ColchonCard from '../components/ColchonCard';
 
 const ProductDetail = () => {
     const { slug } = useParams();
@@ -13,14 +14,22 @@ const ProductDetail = () => {
     const [mainImage, setMainImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [toast, setToast] = useState({ show: false, msg: '' });
+    const [related, setRelated] = useState([]);
 
     useEffect(() => {
         const fetchProduct = async () => {
             setLoading(true);
+            setRelated([]);
             try {
                 const data = await getProductoBySlug(slug);
                 setProduct(data);
                 setMainImage(data.imagen);
+
+                if (data.categoria?.slug) {
+                    const rel = await getProductos({ categoria: data.categoria.slug });
+                    const lista = Array.isArray(rel) ? rel : (rel.results ?? []);
+                    setRelated(lista.filter(p => p.slug !== slug).slice(0, 4));
+                }
             } catch (error) {
                 console.error("Error cargando producto:", error);
             } finally {
@@ -200,6 +209,24 @@ const ProductDetail = () => {
                 </div>
             </div>
 
+            {/* PRODUCTOS RELACIONADOS */}
+            {related.length > 0 && (
+                <div className="related-section">
+                    <div className="related-header">
+                        <h2 className="section-title" style={{ marginBottom: 0 }}>Productos relacionados</h2>
+                        <Link to={`/colchones?categoria=${product.categoria?.slug}`} className="related-ver-mas">
+                            Ver todos
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </Link>
+                    </div>
+                    <div className="related-grid">
+                        {related.map(p => <ColchonCard key={p.id} product={p} />)}
+                    </div>
+                </div>
+            )}
+
             <style>{`
                 .product-page-pro { max-width: 1200px; margin: 0 auto; padding: clamp(20px, 4vw, 60px) clamp(10px, 3vw, 20px); font-family: 'Inter', sans-serif; }
                 .product-layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(20px, 5vw, 60px); margin-bottom: 60px; }
@@ -279,6 +306,16 @@ const ProductDetail = () => {
                 .sticky-info { display: flex; flex-direction: column; min-width: 0; }
                 .sticky-title { font-size: 0.82rem; font-weight: 700; color: #1B365D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .sticky-price { font-size: 1rem; font-weight: 800; color: #1e293b; }
+
+                /* Productos relacionados */
+                .related-section { margin-top: 70px; padding-top: 60px; border-top: 1px solid var(--border-color); }
+                .related-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+                .related-ver-mas { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; color: var(--decoud-blue); text-decoration: none; transition: gap 0.2s ease; }
+                .related-ver-mas:hover { gap: 9px; }
+                .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 20px; }
+                @media (max-width: 768px) {
+                    .related-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+                }
             `}</style>
         </div>
         </div>

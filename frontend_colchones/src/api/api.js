@@ -87,3 +87,8 @@ export const getBanners = async () => {
     const response = await api.get('/banners/');
     return response.data;
 };
+
+export const googleLogin = async (accessToken) => {
+    const response = await api.post('/auth/google/', { access_token: accessToken });
+    return response.data;
+};

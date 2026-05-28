@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/api';
+import api, { googleLogin } from '../api/api';
 import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
@@ -72,6 +72,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const loginWithGoogle = async (googleAccessToken) => {
+        try {
+            const { access, refresh } = await googleLogin(googleAccessToken);
+            localStorage.setItem('accessToken', access);
+            localStorage.setItem('refreshToken', refresh);
+            const meResponse = await api.get('me/');
+            setUser(meResponse.data);
+            return true;
+        } catch (error) {
+            console.error("Google login failed:", error.response?.data);
+            throw error.response?.data || { detail: "Error al iniciar sesión con Google." };
+        }
+    };
+
     const logoutUser = () => {
         setUser(null);
         localStorage.removeItem('accessToken');
@@ -81,6 +95,7 @@ export const AuthProvider = ({ children }) => {
     const contextData = {
         user,
         loginUser,
+        loginWithGoogle,
         logoutUser,
         registerUser,
         loading
