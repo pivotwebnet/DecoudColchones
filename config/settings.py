@@ -8,9 +8,12 @@ from pathlib import Path
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9jj5vc5c98$gb%!2_sr)el!61c(s7vch#a&2sz&jz*xn4kcnso')
@@ -93,11 +96,12 @@ DATABASES = {
         conn_max_age=0  # Para SQLite local es mejor no persistir conexiones
     )
 }
-# WAL mode: permite lecturas concurrentes mientras boto3/R2 sube archivos
-DATABASES['default']['OPTIONS'] = {
-    'timeout': 60,
-    'transaction_mode': 'IMMEDIATE',
-}
+# WAL mode: solo aplica a SQLite (psycopg2 no acepta estas opciones)
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    DATABASES['default']['OPTIONS'] = {
+        'timeout': 60,
+        'transaction_mode': 'IMMEDIATE',
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

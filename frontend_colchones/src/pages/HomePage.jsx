@@ -7,6 +7,8 @@ import ImageCarousel from '../components/ImageCarousel';
 import CategoryCards from '../components/CategoryCards';
 import ProductLines from '../components/ProductLines';
 import ColchonCard from '../components/ColchonCard';
+import ColchonCardSkeleton from '../components/ColchonCardSkeleton';
+import Testimonios from '../components/Testimonios';
 import NuestraHistoria from '../components/NuestraHistoria';
 
 const HomePage = () => {
@@ -58,18 +60,18 @@ const HomePage = () => {
                     <div style={{ width: '60px', height: '4px', backgroundColor: '#D4AF37', margin: '0 auto' }}></div>
                 </div>
 
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-dark)', transition: 'color 0.3s ease' }}>Cargando novedades...</div>
-                ) : (
-                    <div style={styles.productsGrid}>
-                        {latestProducts.map(product => (
-                            <ColchonCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                )}
+                <div style={styles.productsGrid}>
+                    {loading
+                        ? Array.from({ length: 4 }).map((_, i) => <ColchonCardSkeleton key={i} />)
+                        : latestProducts.map(product => <ColchonCard key={product.id} product={product} />)
+                    }
+                </div>
             </section>
 
-            {/* 5. NUESTRA HISTORIA */}
+            {/* 5. TESTIMONIOS */}
+            <Testimonios />
+
+            {/* 6. NUESTRA HISTORIA */}
             <NuestraHistoria />
         </div>
     );

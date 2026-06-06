@@ -89,7 +89,15 @@ const ProductDetail = () => {
                 {/* DERECHA: INFO */}
                 <div className="info-pro">
                     <nav className="breadcrumb-pro">
-                        <Link to="/">Inicio</Link> / <Link to="/colchones">{product.categoria?.nombre}</Link>
+                        <Link to="/">Inicio</Link>
+                        <span className="breadcrumb-sep">›</span>
+                        <Link to="/colchones">Catálogo</Link>
+                        {product.categoria?.nombre && <>
+                            <span className="breadcrumb-sep">›</span>
+                            <Link to={`/colchones?categoria=${product.categoria.slug}`}>{product.categoria.nombre}</Link>
+                        </>}
+                        <span className="breadcrumb-sep">›</span>
+                        <span className="breadcrumb-current">{product.nombre}</span>
                     </nav>
                     
                     <h1 className="product-title">{product.nombre}</h1>
@@ -240,8 +248,11 @@ const ProductDetail = () => {
                 .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
                 /* Info */
-                .breadcrumb-pro { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; }
-                .breadcrumb-pro a { color: inherit; text-decoration: none; }
+                .breadcrumb-pro { font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+                .breadcrumb-pro a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+                .breadcrumb-pro a:hover { color: #1B365D; }
+                .breadcrumb-sep { color: #cbd5e1; }
+                .breadcrumb-current { color: #1B365D; font-weight: 600; }
                 .product-title { font-size: clamp(1.5rem, 5vw, 2.8rem); font-weight: 900; color: #1B365D; margin-bottom: 20px; line-height: 1.1; }
                 .price-tag-pro { display: flex; align-items: baseline; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
                 .price-main { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 800; color: #1e293b; }
