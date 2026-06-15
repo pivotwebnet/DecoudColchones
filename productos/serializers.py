@@ -31,7 +31,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             'id', 'nombre', 'slug', 'descripcion_base',
             'imagen', 'imagenes_extra',
             'precio', 'precio_anterior',
-            'densidad', 'altura', 'medida', 'medida_display', 'tiene_top_pillow',
+            'densidad', 'altura', 'medida', 'medida_display', 'tiene_top_pillow', 'es_rotativo',
             'peso_max_min', 'peso_max_max', 'garantia',
             'categoria', 'linea', 'stock',
             'disponible', 'cuotas', 'destacado'

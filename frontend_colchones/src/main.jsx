@@ -8,11 +8,12 @@ import { ThemeProvider } from './context/ThemeContext.jsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './index.css'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <BrowserRouter>
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const AppContent = () => (
+    <BrowserRouter>
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
@@ -20,6 +21,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>
-      </BrowserRouter>
-    </GoogleOAuthProvider>
+    </BrowserRouter>
+);
+
+root.render(
+    GOOGLE_CLIENT_ID ? (
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <AppContent />
+        </GoogleOAuthProvider>
+    ) : (
+        <AppContent />
+    )
 );

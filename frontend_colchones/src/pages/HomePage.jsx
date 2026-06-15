@@ -10,27 +10,10 @@ import ColchonCard from '../components/ColchonCard';
 import ColchonCardSkeleton from '../components/ColchonCardSkeleton';
 import Testimonios from '../components/Testimonios';
 import NuestraHistoria from '../components/NuestraHistoria';
+import HomeSections from '../components/HomeSections';
 
 const HomePage = () => {
-    const [latestProducts, setLatestProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchNewest = async () => {
-            try {
-                // Traemos productos y mostramos los últimos 4
-                const data = await getProductos();
-                const newest = data.slice(-4).reverse();
-                setLatestProducts(newest);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error cargando productos:", error);
-                setLoading(false);
-            }
-        };
-        fetchNewest();
-    }, []);
-
+    // ... (keep state if needed or remove if HomeSections handles it)
     return (
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             
@@ -50,23 +33,8 @@ const HomePage = () => {
                 <ProductLines />
             </section>
 
-            {/* 4. ¡LO NUEVO! (Últimos ingresos) */}
-            <section className="container-centered" style={{ marginTop: 'clamp(40px, 6vw, 80px)', marginBottom: 'clamp(40px, 6vw, 80px)', padding: '0 20px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', color: 'var(--decoud-blue)', marginBottom: '10px', fontWeight: 'bold', transition: 'color 0.3s ease' }}>
-                        ¡Lo Nuevo!
-                    </h2>
-                    {/* Línea decorativa dorada */}
-                    <div style={{ width: '60px', height: '4px', backgroundColor: '#D4AF37', margin: '0 auto' }}></div>
-                </div>
-
-                <div style={styles.productsGrid}>
-                    {loading
-                        ? Array.from({ length: 4 }).map((_, i) => <ColchonCardSkeleton key={i} />)
-                        : latestProducts.map(product => <ColchonCard key={product.id} product={product} />)
-                    }
-                </div>
-            </section>
+            {/* 4. SECCIONES POR TAMAÑO/TIPO (KIDS, TEENS, FAMILY, PREMIUM) */}
+            <HomeSections />
 
             {/* 5. TESTIMONIOS */}
             <Testimonios />

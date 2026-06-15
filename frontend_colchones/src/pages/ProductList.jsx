@@ -110,12 +110,11 @@ const ProductList = () => {
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const linea    = params.get('linea');
-        const categoria = params.get('categoria');
-        const oferta   = params.get('oferta');
-        if (linea)    setSelectedLine(linea);
-        if (categoria) setSelectedCategory(categoria);
-        if (oferta === 'true') setIsOferta(true);
+        setSelectedLine(params.get('linea'));
+        setSelectedCategory(params.get('categoria'));
+        setSelectedMeasure(params.get('medida'));
+        setMinSupport(params.get('soporte_min') || '');
+        setIsOferta(params.get('oferta') === 'true');
     }, [location.search]);
 
     if (loading) return <div className="loader-container" style={{padding: '100px', textAlign: 'center'}}>Cargando...</div>;

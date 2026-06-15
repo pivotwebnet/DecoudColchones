@@ -12,12 +12,9 @@ const IconGoogle = () => (
   </svg>
 );
 
-const GoogleAuthButton = ({ label = 'Continuar con Google' }) => {
-  const { loginWithGoogle } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+const GoogleLoginInternal = ({ label, loginWithGoogle, navigate, setLoading, setError, loading }) => {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setLoading(true);
@@ -37,35 +34,57 @@ const GoogleAuthButton = ({ label = 'Continuar con Google' }) => {
   });
 
   return (
+    <button
+      type="button"
+      onClick={() => login()}
+      disabled={loading}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        padding: '13px 16px',
+        borderRadius: '10px',
+        border: '1.5px solid var(--border-color)',
+        backgroundColor: 'var(--content-bg)',
+        color: 'var(--color-text-dark)',
+        fontSize: '0.92rem',
+        fontWeight: '600',
+        cursor: loading ? 'not-allowed' : 'pointer',
+        opacity: loading ? 0.7 : 1,
+        transition: 'all 0.2s ease',
+        fontFamily: 'inherit',
+      }}
+      onMouseEnter={e => { if (!loading) e.currentTarget.style.borderColor = '#4285F4'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+    >
+      <IconGoogle />
+      {loading ? 'Iniciando sesión...' : label}
+    </button>
+  );
+};
+
+const GoogleAuthButton = ({ label = 'Continuar con Google' }) => {
+  const { loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  if (!GOOGLE_CLIENT_ID) {
+    return null; // Don't render anything if Google Auth is not configured
+  }
+
+  return (
     <div>
-      <button
-        type="button"
-        onClick={() => login()}
-        disabled={loading}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          padding: '13px 16px',
-          borderRadius: '10px',
-          border: '1.5px solid var(--border-color)',
-          backgroundColor: 'var(--content-bg)',
-          color: 'var(--color-text-dark)',
-          fontSize: '0.92rem',
-          fontWeight: '600',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.7 : 1,
-          transition: 'all 0.2s ease',
-          fontFamily: 'inherit',
-        }}
-        onMouseEnter={e => { if (!loading) e.currentTarget.style.borderColor = '#4285F4'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-      >
-        <IconGoogle />
-        {loading ? 'Iniciando sesión...' : label}
-      </button>
+      <GoogleLoginInternal 
+        label={label}
+        loginWithGoogle={loginWithGoogle}
+        navigate={navigate}
+        setLoading={setLoading}
+        setError={setError}
+        loading={loading}
+      />
       {error && (
         <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '8px', textAlign: 'center' }}>
           {error}

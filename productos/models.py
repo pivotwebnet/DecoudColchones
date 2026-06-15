@@ -53,6 +53,7 @@ class Producto(models.Model):
     densidad = models.IntegerField(verbose_name="Densidad (kg/m³)", help_text="Solo el número (ej: 30)", null=True, blank=True) 
     altura = models.IntegerField(verbose_name="Altura (cm)", help_text="Solo el número (ej: 25)", null=True, blank=True)
     tiene_top_pillow = models.BooleanField(default=False, verbose_name="¿Tiene Top Pillow?")
+    es_rotativo = models.BooleanField(default=True, verbose_name="¿Es rotativo?")
     
     GARANTIA_CHOICES = [
         ('Sin garantía', 'Sin garantía'),

@@ -210,6 +210,10 @@ const ProductDetail = () => {
                             <span className="spec-value">{product.tiene_top_pillow ? 'Sí' : 'No'}</span>
                         </div>
                         <div className="spec-row">
+                            <span className="spec-name">Rotativo</span>
+                            <span className="spec-value">{product.es_rotativo ? 'Sí' : 'No'}</span>
+                        </div>
+                        <div className="spec-row">
                             <span className="spec-name">Garantía</span>
                             <span className="spec-value">{product.garantia}</span>
                         </div>
