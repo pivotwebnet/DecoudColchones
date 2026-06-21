@@ -234,6 +234,11 @@ UNFOLD = {
                 "separator": True,
                 "items": [
                     {
+                        "title": "Métricas",
+                        "icon":  "bar_chart",
+                        "link":  reverse_lazy("admin-metricas-dashboard"),
+                    },
+                    {
                         "title": "Pedidos",
                         "icon":  "shopping_bag",
                         "link":  reverse_lazy("admin:productos_pedido_changelist"),

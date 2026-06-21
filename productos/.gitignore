@@ -18,7 +18,7 @@ env/
 # --- Archivos Estáticos y Media ---
 # Render generará los estáticos en el deploy
 staticfiles/
-# Las imágenes subidas por usuarios no van al repo (usamos Cloudinary)
+# Las imágenes subidas por usuarios no van al repo (usamos Cloudflare R2)
 media/
 
 # --- IDEs y Sistema Operativo ---

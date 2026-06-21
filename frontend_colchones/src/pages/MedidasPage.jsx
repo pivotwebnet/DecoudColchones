@@ -119,7 +119,12 @@ const MedidasPage = () => {
                                         {size.width}×{size.height}
                                     </span>
                                     {size.popular && (
-                                        <span style={s.popularBadge}>⭐ Más vendido</span>
+                                        <span style={s.popularBadge}>
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle', marginTop: '-2px' }}>
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                            </svg>
+                                            Más vendido
+                                        </span>
                                     )}
                                 </button>
                             );
@@ -192,10 +197,53 @@ const MedidasPage = () => {
                     <h2 style={s.sectionTitle}>¿Cómo elegir tu colchón?</h2>
                     <div style={s.tipsGrid}>
                         {[
-                            { icon: '📐', title: 'Medí tu habitación', text: 'Dejá al menos 60 cm libres a los costados y al pie de la cama para circular cómodamente.' },
-                            { icon: '👥', title: 'Pensá quién lo usa', text: 'Una persona: 1 plaza o 1½. Pareja: 2 plazas como mínimo. Para mayor confort, Queen o King.' },
-                            { icon: '🔄', title: 'Considerá el largo', text: 'Si medís más de 1,80 m, optá por modelos de 200 cm de largo (Queen o King).' },
-                            { icon: '💡', title: '¿Dudas?', text: 'Escribinos por WhatsApp. Te asesoramos para encontrar el colchón ideal según tu dormitorio.' },
+                            { 
+                                icon: (
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect width="20" height="8" x="2" y="8" rx="2" />
+                                        <path d="M6 12v4" />
+                                        <path d="M10 12v4" />
+                                        <path d="M14 12v4" />
+                                        <path d="M18 12v4" />
+                                    </svg>
+                                ), 
+                                title: 'Medí tu habitación', 
+                                text: 'Dejá al menos 60 cm libres a los costados y al pie de la cama para circular cómodamente.' 
+                            },
+                            { 
+                                icon: (
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                ), 
+                                title: 'Pensá quién lo usa', 
+                                text: 'Una persona: 1 plaza o 1½. Pareja: 2 plazas como mínimo. Para mayor confort, Queen o King.' 
+                            },
+                            { 
+                                icon: (
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="m8 18 4 4 4-4" />
+                                        <path d="M12 2v20" />
+                                        <path d="m16 6-4-4-4 4" />
+                                    </svg>
+                                ), 
+                                title: 'Considerá el largo', 
+                                text: 'Si medís más de 1,80 m, optá por modelos de 200 cm de largo (Queen o King).' 
+                            },
+                            { 
+                                icon: (
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                                        <path d="M9 18h6" />
+                                        <path d="M10 22h4" />
+                                    </svg>
+                                ), 
+                                title: '¿Dudas?', 
+                                text: 'Escribinos por WhatsApp. Te asesoramos para encontrar el colchón ideal según tu dormitorio.' 
+                            },
                         ].map((tip, i) => (
                             <div key={i} style={s.tipCard}>
                                 <span style={s.tipIcon}>{tip.icon}</span>
@@ -423,8 +471,9 @@ const s = {
         transition: 'all 0.3s ease',
     },
     tipIcon: {
-        fontSize: '1.8rem',
-        display: 'block',
+        display: 'flex',
+        alignItems: 'center',
+        height: '32px',
         marginBottom: '10px',
     },
     tipTitle: {

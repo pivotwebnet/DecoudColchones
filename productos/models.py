@@ -107,6 +107,12 @@ class ProductoImagen(models.Model):
         ordering = ['orden']
         verbose_name_plural = "Galería de Imágenes"
 
+    def save(self, *args, **kwargs):
+        if not self.pk and (self.orden is None or self.orden == 0):
+            max_orden = ProductoImagen.objects.filter(producto=self.producto).aggregate(models.Max('orden'))['orden__max']
+            self.orden = (max_orden or 0) + 1
+        super().save(*args, **kwargs)
+
 # --- 4. Pedido ---
 class Pedido(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos')
@@ -144,6 +150,12 @@ class Banner(models.Model):
     class Meta:
         ordering = ['orden']
 
+    def save(self, *args, **kwargs):
+        if not self.pk and (self.orden is None or self.orden == 0):
+            max_orden = Banner.objects.aggregate(models.Max('orden'))['orden__max']
+            self.orden = (max_orden or 0) + 1
+        super().save(*args, **kwargs)
+
 class LineaProducto(models.Model):
     nombre = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
@@ -154,6 +166,14 @@ class LineaProducto(models.Model):
     class Meta:
         ordering = ['orden']
         verbose_name = "Línea de Producto"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        if not self.pk and (self.orden is None or self.orden == 0):
+            max_orden = LineaProducto.objects.aggregate(models.Max('orden'))['orden__max']
+            self.orden = (max_orden or 0) + 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre

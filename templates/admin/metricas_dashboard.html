@@ -1,0 +1,581 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<!-- Forzar de inmediato el modo oscuro en el elemento HTML principal -->
+<script>
+  (function() {
+    document.documentElement.classList.add("dark");
+    try { localStorage.setItem("theme", "dark"); } catch (_) {}
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Importar Google Font "Outfit" para una tipografía ultra-premium -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+  /* Reset general con tipografía premium */
+  #content, .metricas-body {
+    font-family: 'Outfit', sans-serif !important;
+    background-color: #0b0f19 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* Dashboard Contenedor */
+  .dashboard-wrapper {
+    background-color: #0b0f19 !important;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* Tarjetas Premium con efecto de Cristal/Vidrio Esmerilado */
+  .premium-card {
+    background: rgba(21, 27, 38, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .premium-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 175, 55, 0.3) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.04);
+  }
+
+  /* KPIs Especiales con Bordes de Gradiente Brillante */
+  .kpi-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+  }
+  .kpi-card-gold::before { background: linear-gradient(180deg, #D4AF37, #b49430); }
+  .kpi-card-blue::before { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
+  .kpi-card-green::before { background: linear-gradient(180deg, #10b981, #047857); }
+
+  /* Cápsulas de Iconos con brillo */
+  .icon-capsule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  .kpi-card:hover .icon-capsule {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  /* Campos de formulario modernos y limpios */
+  .modern-input {
+    background-color: #161f30 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    font-size: 0.875rem !important;
+    transition: all 0.25s ease;
+  }
+  .modern-input:focus {
+    border-color: #D4AF37 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25) !important;
+  }
+
+  /* Botón Filtrar dorado */
+  .btn-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #b49430 100%) !important;
+    color: #0b0f19 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 10px !important;
+    padding: 12px 24px !important;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3) !important;
+    transition: all 0.25s ease !important;
+  }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
+    opacity: 0.95;
+  }
+  .btn-gold:active {
+    transform: translateY(0);
+  }
+
+  /* Botón Volver estilizado */
+  .btn-back {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+    border-radius: 50% !important;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+  }
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #D4AF37 !important;
+    color: #D4AF37 !important;
+    transform: scale(1.05);
+  }
+
+  /* Tablas Premium */
+  .premium-table th {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+    color: #94a3b8 !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .premium-table td {
+    padding: 14px 18px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    color: #cbd5e1 !important;
+    vertical-align: middle;
+  }
+  .premium-table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  .premium-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+  }
+
+  /* Badges de Estado Brillantes */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .status-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .badge-pendiente {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+  .badge-pendiente .status-badge-dot { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+
+  .badge-pagado {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  .badge-pagado .status-badge-dot { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+
+  .badge-cancelado {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+  .badge-cancelado .status-badge-dot { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D4AF37;
+  }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="px-8 py-3 border-b border-gray-200 dark:border-gray-800 text-xs font-semibold uppercase tracking-wider text-gray-500" style="background-color: #0b0f19;">
+    <a href="{% url 'admin:index' %}" class="text-primary-500 hover:text-primary-400">{% translate 'Home' %}</a> &rsaquo;
+    <span class="text-gray-400">Métricas</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header & Date Filter Card -->
+        <div class="premium-card p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'admin:index' %}" class="btn-back" title="Volver al Panel Principal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white uppercase" style="font-family: 'Outfit', sans-serif;">
+                        Métricas de Rendimiento
+                    </h1>
+                    <p class="text-gray-400 text-sm mt-0.5">Reportes financieros, registro de clientes e histórico de pedidos.</p>
+                </div>
+            </div>
+            
+            <form method="GET" class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                <div class="flex flex-col min-w-[130px]">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Fecha Inicial</span>
+                    <input type="date" name="desde" value="{{ start_date }}" class="modern-input">
+                </div>
+                <div class="flex flex-col min-w-[130px]">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Fecha Final</span>
+                    <input type="date" name="hasta" value="{{ end_date }}" class="modern-input">
+                </div>
+                <button type="submit" class="btn-gold self-end h-[42px] flex items-center justify-center">
+                    Filtrar Reporte
+                </button>
+            </form>
+        </div>
+
+        <!-- KPI Cards Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            
+            <!-- KPI 1: Facturación -->
+            <div class="premium-card kpi-card kpi-card-gold p-6 flex items-center justify-between">
+                <div>
+                    <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider block">Total Facturado</span>
+                    <h3 class="text-3xl font-black text-white mt-1.5">${{ total_facturado|floatformat:0 }}</h3>
+                    <p class="text-xs text-green-400 font-medium mt-1 flex items-center gap-1">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Excluye pedidos cancelados
+                    </p>
+                </div>
+                <div class="icon-capsule" style="background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- KPI 2: Pedidos -->
+            <div class="premium-card kpi-card kpi-card-blue p-6 flex items-center justify-between">
+                <div>
+                    <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider block">Pedidos Recibidos</span>
+                    <h3 class="text-3xl font-black text-white mt-1.5">{{ total_pedidos }}</h3>
+                    <p class="text-xs text-blue-400 font-medium mt-1">Órdenes en el rango seleccionado</p>
+                </div>
+                <div class="icon-capsule" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- KPI 3: Clientes -->
+            <div class="premium-card kpi-card kpi-card-green p-6 flex items-center justify-between">
+                <div>
+                    <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider block">Clientes Registrados</span>
+                    <h3 class="text-3xl font-black text-white mt-1.5">{{ total_clientes }}</h3>
+                    <p class="text-xs text-green-400 font-medium mt-1">Total acumulado en plataforma</p>
+                </div>
+                <div class="icon-capsule" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Line/Bar Hybrid Chart -->
+            <div class="premium-card p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1.5 h-6 bg-blue-500 rounded-full"></div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-tight">Ventas Diarias e Ingresos</h3>
+                </div>
+                <div style="position: relative; height: 320px; width: 100%;">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Products Chart -->
+            <div class="premium-card p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1.5 h-6 bg-[#D4AF37] rounded-full"></div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-tight">Top 10 Productos Más Vendidos</h3>
+                </div>
+                <div style="position: relative; height: 320px; width: 100%;">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lists Grid Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Top 5 Buyers Table -->
+            <div class="premium-card p-6 lg:col-span-1">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-800 pb-3">
+                    <div class="w-1.5 h-6 bg-green-500 rounded-full"></div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-tight">Top 5 Compradores</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm premium-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th class="text-right">Pedidos</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comprador in top_compradores %}
+                            <tr>
+                                <td>
+                                    <div class="font-bold text-white">{{ comprador.nombre_cliente }} {{ comprador.apellido_cliente }}</div>
+                                    <div class="text-xs text-gray-400">{{ comprador.usuario__email|default:"Invitado" }}</div>
+                                </td>
+                                <td class="text-right font-semibold text-gray-400">{{ comprador.cantidad_pedidos }}</td>
+                                <td class="text-right font-black text-[#D4AF37]">${{ comprador.total_gastado|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-6 text-gray-500">Sin datos de compras</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Orders Table -->
+            <div class="premium-card p-6 lg:col-span-2">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-800 pb-3">
+                    <div class="w-1.5 h-6 bg-[#D4AF37] rounded-full"></div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-tight">Historial Reciente de Órdenes</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm premium-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th class="text-right">Monto Neto</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in ultimos_pedidos %}
+                            <tr>
+                                <td class="font-bold text-[#D4AF37]">
+                                    <a href="{% url 'admin:productos_pedido_change' pedido.id %}" class="hover:underline">
+                                        #{{ pedido.id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="font-bold text-white">{{ pedido.nombre_cliente }} {{ pedido.apellido_cliente }}</div>
+                                    <div class="text-xs text-gray-400">{{ pedido.ciudad }}, {{ pedido.provincia }}</div>
+                                </td>
+                                <td class="text-xs text-gray-400">{{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                                <td class="text-right font-black text-white">${{ pedido.total_neto|floatformat:0 }}</td>
+                                <td class="text-center">
+                                    <span class="status-badge badge-{{ pedido.estado }}">
+                                        <span class="status-badge-dot"></span>
+                                        {{ pedido.estado }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-6 text-gray-500">No se encontraron registros de pedidos</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Configuración global y adaptativa de colores de Chart.js
+    const decoudGold = '#D4AF37';
+    const decoudBlue = '#3b82f6'; // Azul eléctrico brillante para dark mode
+    const gridColor = 'rgba(255, 255, 255, 0.04)';
+    const labelColor = '#94a3b8';
+    const tooltipBg = '#161f30';
+
+    // Gráfico 1: Evolución de Ventas e Ingresos
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    
+    // Crear degradados dinámicos
+    const goldGrad = salesCtx.createLinearGradient(0, 0, 0, 300);
+    goldGrad.addColorStop(0, 'rgba(212, 175, 55, 0.65)');
+    goldGrad.addColorStop(1, 'rgba(212, 175, 55, 0.03)');
+
+    const blueGrad = salesCtx.createLinearGradient(0, 0, 0, 300);
+    blueGrad.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
+    blueGrad.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+    new Chart(salesCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_dates|safe }},
+            datasets: [
+                {
+                    label: 'Cantidad de Pedidos',
+                    data: {{ chart_orders_count|safe }},
+                    backgroundColor: goldGrad,
+                    borderColor: decoudGold,
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                    yAxisID: 'yOrders',
+                },
+                {
+                    label: 'Ingresos ($)',
+                    data: {{ chart_revenue|safe }},
+                    type: 'line',
+                    borderColor: decoudBlue,
+                    backgroundColor: blueGrad,
+                    borderWidth: 2.5,
+                    tension: 0.35,
+                    fill: true,
+                    yAxisID: 'yRevenue',
+                    pointBackgroundColor: decoudBlue,
+                    pointHoverRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: labelColor,
+                        font: { family: 'Outfit', size: 12, weight: '600' }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: tooltipBg,
+                    titleColor: '#fff',
+                    bodyColor: '#cbd5e1',
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderWidth: 1,
+                    padding: 12,
+                    titleFont: { family: 'Outfit', weight: 'bold' },
+                    bodyFont: { family: 'Outfit' }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { color: labelColor, font: { family: 'Outfit', size: 10 } }
+                },
+                yOrders: {
+                    type: 'linear',
+                    position: 'left',
+                    grid: { color: gridColor },
+                    ticks: { color: labelColor, font: { family: 'Outfit' }, stepSize: 1 },
+                    title: {
+                        display: true,
+                        text: 'Pedidos',
+                        color: labelColor,
+                        font: { family: 'Outfit', weight: 'bold' }
+                    }
+                },
+                yRevenue: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: labelColor, font: { family: 'Outfit' } },
+                    title: {
+                        display: true,
+                        text: 'Ingresos ($)',
+                        color: labelColor,
+                        font: { family: 'Outfit', weight: 'bold' }
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico 2: Productos más vendidos (Top 10)
+    const productsCtx = document.getElementById('productsChart').getContext('2d');
+    
+    const barGrad = productsCtx.createLinearGradient(0, 0, 400, 0);
+    barGrad.addColorStop(0, 'rgba(212, 175, 55, 0.85)');
+    barGrad.addColorStop(1, 'rgba(27, 54, 93, 0.45)');
+
+    new Chart(productsCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_products_labels|safe }},
+            datasets: [{
+                label: 'Unidades Vendidas',
+                data: {{ chart_products_data|safe }},
+                backgroundColor: barGrad,
+                borderColor: decoudGold,
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: tooltipBg,
+                    titleColor: '#fff',
+                    bodyColor: '#cbd5e1',
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderWidth: 1,
+                    padding: 12,
+                    titleFont: { family: 'Outfit', weight: 'bold' },
+                    bodyFont: { family: 'Outfit' }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { color: labelColor, font: { family: 'Outfit' }, stepSize: 1 }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: { color: labelColor, font: { family: 'Outfit', size: 11, weight: '500' } }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

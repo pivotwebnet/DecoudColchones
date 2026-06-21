@@ -3,11 +3,23 @@ from django.utils.html import mark_safe
 from unfold.admin import ModelAdmin, TabularInline
 from django_summernote.admin import SummernoteModelAdmin
 from .models import Producto, Categoria, Banner, LineaProducto, ProductoImagen, Pedido, ItemPedido
+from django.urls import reverse
+
+def render_acciones(app_label, model_name, obj_id):
+    edit_url = reverse(f'admin:{app_label}_{model_name}_change', args=[obj_id])
+    delete_url = reverse(f'admin:{app_label}_{model_name}_delete', args=[obj_id])
+    return mark_safe(
+        f'<div style="display: flex; gap: 8px; align-items: center;">'
+        f'<a href="{edit_url}" style="background-color: #1B365D; color: #ffffff; font-weight: 700; border-radius: 6px; padding: 6px 12px; font-size: 11px; text-transform: uppercase; text-decoration: none; border: 1px solid #1B365D; transition: all 0.2s;" onmouseover="this.style.backgroundColor=\'#2c5282\'" onmouseout="this.style.backgroundColor=\'#1B365D\'">Editar</a>'
+        f'<a href="{delete_url}" style="background-color: #ef4444; color: #ffffff; font-weight: 700; border-radius: 6px; padding: 6px 12px; font-size: 11px; text-transform: uppercase; text-decoration: none; border: 1px solid #ef4444; transition: all 0.2s;" onmouseover="this.style.backgroundColor=\'#dc2626\'" onmouseout="this.style.backgroundColor=\'#ef4444\'">Eliminar</a>'
+        f'</div>'
+    )
 
 
 class ProductoImagenInline(TabularInline):
     model = ProductoImagen
     extra = 1
+    readonly_fields = ('orden',)
 
 
 class ItemPedidoInline(TabularInline):
@@ -22,7 +34,7 @@ class ItemPedidoInline(TabularInline):
 
 @admin.register(Producto)
 class ProductoAdmin(ModelAdmin, SummernoteModelAdmin):
-    list_display = ('nombre', 'categoria', 'linea', 'precio', 'stock', 'ver_imagen', 'destacado')
+    list_display = ('nombre', 'categoria', 'linea', 'precio', 'stock', 'ver_imagen', 'destacado', 'acciones')
     search_fields = ('nombre', 'descripcion_base')
     list_filter = ('categoria', 'linea', 'destacado')
     prepopulated_fields = {'slug': ('nombre',)}
@@ -47,10 +59,14 @@ class ProductoAdmin(ModelAdmin, SummernoteModelAdmin):
         return "Sin img"
     ver_imagen.short_description = "Imagen"
 
+    def acciones(self, obj):
+        return render_acciones('productos', 'producto', obj.pk)
+    acciones.short_description = "Acciones"
+
 
 @admin.register(Pedido)
 class PedidoAdmin(ModelAdmin):
-    list_display = ('id', 'nombre_cliente', 'apellido_cliente', 'ciudad', 'total_neto', 'estado', 'metodo_pago', 'fecha_creacion')
+    list_display = ('id', 'nombre_cliente', 'apellido_cliente', 'ciudad', 'total_neto', 'estado', 'metodo_pago', 'acciones', 'fecha_creacion')
     list_filter = ('estado', 'metodo_pago', 'provincia')
     search_fields = ('nombre_cliente', 'apellido_cliente', 'dni_cliente', 'telefono_contacto')
     readonly_fields = ('fecha_creacion',)
@@ -68,25 +84,59 @@ class PedidoAdmin(ModelAdmin):
         }),
     )
 
+    def acciones(self, obj):
+        return render_acciones('productos', 'pedido', obj.pk)
+    acciones.short_description = "Acciones"
+
 
 @admin.register(Categoria)
 class CategoriaAdmin(ModelAdmin):
-    list_display = ('nombre', 'slug')
+    list_display = ('nombre', 'slug', 'acciones')
     prepopulated_fields = {'slug': ('nombre',)}
+
+    def acciones(self, obj):
+        return render_acciones('productos', 'categoria', obj.pk)
+    acciones.short_description = "Acciones"
 
 
 @admin.register(LineaProducto)
 class LineaProductoAdmin(ModelAdmin):
-    list_display = ('nombre', 'slug', 'orden', 'activa')
+    list_display = ('nombre', 'slug', 'orden', 'activa', 'acciones')
     prepopulated_fields = {'slug': ('nombre',)}
+    readonly_fields = ('orden',)
+
+    def acciones(self, obj):
+        return render_acciones('productos', 'lineaproducto', obj.pk)
+    acciones.short_description = "Acciones"
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        if 'orden' not in initial or initial['orden'] == 0:
+            from django.db.models import Max
+            max_orden = LineaProducto.objects.aggregate(Max('orden'))['orden__max']
+            initial['orden'] = (max_orden or 0) + 1
+        return initial
 
 
 @admin.register(Banner)
 class BannerAdmin(ModelAdmin):
-    list_display = ('titulo', 'orden', 'activo', 'vista_previa')
+    list_display = ('titulo', 'orden', 'activo', 'vista_previa', 'acciones')
+    readonly_fields = ('orden',)
 
     def vista_previa(self, obj):
         if obj.imagen:
             return mark_safe(f'<img src="{obj.imagen.url}" width="100" />')
         return "-"
     vista_previa.short_description = "Vista previa"
+
+    def acciones(self, obj):
+        return render_acciones('productos', 'banner', obj.pk)
+    acciones.short_description = "Acciones"
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        if 'orden' not in initial or initial['orden'] == 0:
+            from django.db.models import Max
+            max_orden = Banner.objects.aggregate(Max('orden'))['orden__max']
+            initial['orden'] = (max_orden or 0) + 1
+        return initial
